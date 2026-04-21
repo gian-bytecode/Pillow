@@ -229,79 +229,45 @@ re-uploads (transparent but slower for large images).
 Performance
 -----------
 
-Benchmarks run on an **Intel Iris Xe** integrated GPU (96 EU, 768 ALUs,
-shared memory) on Windows, Python 3.11. Timings are median of 10 runs.
-GPU times exclude CPU↔GPU transfer (data already resident in VRAM).
+GPU acceleration is most effective when the image is large enough that the
+parallel work outweighs the kernel-launch overhead (~0.1–0.5 ms on typical
+hardware).  General guidelines:
 
-.. list-table::
-   :header-rows: 1
-   :widths: 35 18 18 15 14
+**Operations that scale very well** (embarrassingly parallel, all pixels
+independent):
 
-   * - Operation
-     - 512² CPU (ms)
-     - 512² GPU (ms)
-     - 2048² CPU (ms)
-     - 2048² GPU (ms)
-   * - ``transform`` (affine)
-     - 5.59
-     - 0.42 **(13×)**
-     - 96.85
-     - 3.76 **(25×)**
-   * - ``mode_filter`` (3×3)
-     - 39.78
-     - 2.10 **(19×)**
-     - 654.95
-     - 33.65 **(19×)**
-   * - ``resize`` bilinear ÷2
-     - 0.85
-     - 0.23 **(3.7×)**
-     - 17.53
-     - 1.38 **(12.7×)**
-   * - ``alpha_composite``
-     - 1.22
-     - 0.21 **(5.8×)**
-     - 19.22
-     - 2.44 **(7.9×)**
-   * - ``ImageEnhance.Contrast``
-     - 1.81
-     - 0.52 **(3.5×)**
-     - 24.47
-     - 3.39 **(7.2×)**
-   * - ``convolve`` (SHARPEN)
-     - 3.18
-     - 0.66 **(4.8×)**
-     - 51.28
-     - 7.39 **(6.9×)**
-   * - ``histogram`` (L)
-     - 0.42
-     - 0.15 **(2.8×)**
-     - 6.79
-     - 1.07 **(6.4×)**
-   * - ``box_blur`` r=2
-     - 2.06
-     - 0.75 **(2.7×)**
-     - 44.92
-     - 7.41 **(6.1×)**
-   * - ``gaussian_blur`` r=2
-     - 5.06
-     - 3.75 **(1.4×)**
-     - 91.20
-     - 50.97 **(1.8×)**
+- Affine / perspective transform
+- Resize (bilinear, bicubic)
+- Alpha composite, blend, paste
+- ImageEnhance (brightness, contrast, colour, sharpness)
+- Convolution kernels (SHARPEN, SMOOTH, EMBOSS, …)
+- Point operations (LUT, scale/offset, negative, posterize, solarize)
+- Histogram (parallel reduce)
+- effect_spread
 
-**Transfer overhead** (CPU↔GPU round-trip): ~0.04 ms at 128², ~1.2 ms at 512²,
-~31 ms at 2048². Operations are most profitable when data stays in VRAM
-across multiple steps.
+**Operations that scale moderately** (parallel but memory-bandwidth bound
+or multi-pass):
 
-**Crossover point** (where GPU compute becomes faster than CPU):
+- Box blur, gaussian blur, unsharp mask
+- Mode filter / rank filter
+- Convert, copy, transpose, offset, crop, expand
 
-- **Always faster**: affine transform, mode filter, rank filter, effect_spread
-- **From 128² / 256²**: resize bilinear, alpha_composite, ImageEnhance
-- **From 512²**: most operations (convert, box_blur, convolve, histogram, …)
-- **From 1024²**: transpose, getextrema, reduce
-- **Not faster**: ``gaussian_blur`` with large radius (kernel is memory-bandwidth bound)
+**Operations where the GPU advantage is smaller** (output is tiny relative
+to input, or the algorithm has low arithmetic intensity):
 
-Full benchmark data is available in ``GPU_BENCHMARK_REPORT.md`` in the
-repository root.
+- ``getbbox``, ``getextrema`` (reduction to a single value)
+- ``reduce`` (downsamples aggressively, output is small)
+- Large-radius gaussian blur (dominated by memory bandwidth)
+
+**Transfer overhead**: uploading/downloading an image to/from VRAM takes
+time proportional to the pixel count.  The GPU delivers the best net
+speedup when multiple operations are chained *without* round-tripping
+through CPU memory — see `Keeping data on the GPU`_ below.
+
+To measure concrete timings on your own hardware, run the benchmark suite
+included in the repository::
+
+   python Tests/benchmark_gpu.py
 
 Keeping data on the GPU
 -----------------------

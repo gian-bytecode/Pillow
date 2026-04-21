@@ -50,7 +50,10 @@ def main():
             lambda: gpu_img.gaussian_blur(5),
         )
         speedup = cpu_blur / gpu_blur if gpu_blur > 0 else float("inf")
-        print(f"  GaussianBlur(5):  CPU {cpu_blur:7.2f} ms  GPU {gpu_blur:7.2f} ms  -> {speedup:.1f}x")
+        print(
+            f"  GaussianBlur(5): "
+            f"CPU {cpu_blur:7.2f} ms  GPU {gpu_blur:7.2f} ms  -> {speedup:.1f}x"
+        )
 
         # --- Box Blur ---
         cpu_box = _bench(
@@ -62,7 +65,10 @@ def main():
             lambda: gpu_img.box_blur(5),
         )
         speedup = cpu_box / gpu_box if gpu_box > 0 else float("inf")
-        print(f"  BoxBlur(5):       CPU {cpu_box:7.2f} ms  GPU {gpu_box:7.2f} ms  -> {speedup:.1f}x")
+        print(
+            f"  BoxBlur(5):      "
+            f"CPU {cpu_box:7.2f} ms  GPU {gpu_box:7.2f} ms  -> {speedup:.1f}x"
+        )
 
         # --- Resize (down to 1/4) ---
         new_size = (w // 4, h // 4)
@@ -75,7 +81,10 @@ def main():
             lambda: gpu_img.resize(new_size),
         )
         speedup = cpu_resize / gpu_resize if gpu_resize > 0 else float("inf")
-        print(f"  Resize(1/4):      CPU {cpu_resize:7.2f} ms  GPU {gpu_resize:7.2f} ms  -> {speedup:.1f}x")
+        print(
+            f"  Resize(1/4):     "
+            f"CPU {cpu_resize:7.2f} ms  GPU {gpu_resize:7.2f} ms  -> {speedup:.1f}x"
+        )
 
         # --- Convert RGB -> L ---
         cpu_conv = _bench(
@@ -87,7 +96,10 @@ def main():
             lambda: gpu_img.convert("L"),
         )
         speedup = cpu_conv / gpu_conv if gpu_conv > 0 else float("inf")
-        print(f"  Convert(L):       CPU {cpu_conv:7.2f} ms  GPU {gpu_conv:7.2f} ms  -> {speedup:.1f}x")
+        print(
+            f"  Convert(L):      "
+            f"CPU {cpu_conv:7.2f} ms  GPU {gpu_conv:7.2f} ms  -> {speedup:.1f}x"
+        )
 
         # --- Transpose (flip LR) ---
         cpu_flip = _bench(
@@ -99,7 +111,10 @@ def main():
             lambda: gpu_img.transpose(0),  # FLIP_LEFT_RIGHT = 0
         )
         speedup = cpu_flip / gpu_flip if gpu_flip > 0 else float("inf")
-        print(f"  Flip LR:          CPU {cpu_flip:7.2f} ms  GPU {gpu_flip:7.2f} ms  -> {speedup:.1f}x")
+        print(
+            f"  Flip LR:         "
+            f"CPU {cpu_flip:7.2f} ms  GPU {gpu_flip:7.2f} ms  -> {speedup:.1f}x"
+        )
 
         # --- Full pipeline: upload + blur + resize + download ---
         def cpu_pipeline():
@@ -114,7 +129,10 @@ def main():
         cpu_pipe = _bench("CPU pipeline", cpu_pipeline)
         gpu_pipe = _bench("GPU pipeline", gpu_pipeline)
         speedup = cpu_pipe / gpu_pipe if gpu_pipe > 0 else float("inf")
-        print(f"  Pipeline(blur+resize+xfer): CPU {cpu_pipe:7.2f} ms  GPU {gpu_pipe:7.2f} ms  -> {speedup:.1f}x")
+        print(
+            f"  Pipeline(blur+resize+xfer): "
+            f"CPU {cpu_pipe:7.2f} ms  GPU {gpu_pipe:7.2f} ms  -> {speedup:.1f}x"
+        )
 
         print()
 

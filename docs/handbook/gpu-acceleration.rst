@@ -1,3 +1,5 @@
+.. _gpu-acceleration:
+
 GPU Acceleration
 ================
 
@@ -133,7 +135,7 @@ possible, so existing PIL code is easy to migrate::
    result.save("output.jpg")
 
 GPU images and CPU images are never mixed automatically — an explicit
-:py:meth:`~PIL.gpu.Image.Image.from_cpu` / :py:meth:`~PIL.gpu.Image.Image.to_cpu`
+``from_cpu()`` / ``to_cpu()``
 call is always required.
 
 Supported operations

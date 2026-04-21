@@ -24,8 +24,8 @@ Platform support
 | **Linux**        | ✓        | ✓    | Recommended. Any GPU with an ICD driver  |
 |                  |          |      | works (AMD, Intel, NVIDIA, etc.).        |
 +------------------+----------+------+------------------------------------------+
-| **Windows**      | ✓        | ✓    | Intel oneAPI, AMD ROCm-OCL, or NVIDIA    |
-|                  |          |      | GPU Toolkit. Tested on Intel Iris Xe.    |
+| **Windows**      | ✓        | ✓    | OpenCL runtime ships with any GPU driver.|
+|                  |          |      | CUDA needs NVIDIA GPU + CUDA Toolkit.    |
 +------------------+----------+------+------------------------------------------+
 | **macOS**        | ⚠        | ✗    | Apple ships a system OpenCL 1.2 runtime  |
 |                  |          |      | (deprecated since 10.14, still present). |

@@ -55,6 +55,8 @@ RAQM_ROOT = None
 TIFF_ROOT = None
 WEBP_ROOT = None
 ZLIB_ROOT = None
+OPENCL_ROOT = None
+CUDA_ROOT = None
 FUZZING_BUILD = "LIB_FUZZING_ENGINE" in os.environ
 
 if sys.platform == "win32" and sys.version_info >= (3, 15):
@@ -321,6 +323,8 @@ class pil_build_ext(build_ext):
             "imagequant",
             "xcb",
             "avif",
+            "opencl",
+            "cuda",
         ]
 
         required = {"jpeg", "zlib"}
@@ -517,6 +521,8 @@ class pil_build_ext(build_ext):
             "WEBP_ROOT": "libwebp",
             "LCMS_ROOT": "lcms2",
             "IMAGEQUANT_ROOT": "libimagequant",
+            "OPENCL_ROOT": "OpenCL",
+            "CUDA_ROOT": "cuda",
         }.items():
             root = globals()[root_name]
 
@@ -879,6 +885,40 @@ class pil_build_ext(build_ext):
                 if _find_library_file(self, "xcb"):
                     feature.set("xcb", "xcb")
 
+        if feature.want("opencl"):
+            _dbg("Looking for OpenCL")
+            # On Windows, check Intel oneAPI path if OPENCL_ROOT not set
+            if sys.platform == "win32" and not globals().get("OPENCL_ROOT"):
+                oneapi_cl = os.path.join(
+                    os.environ.get("ProgramFiles(x86)", ""),
+                    "Intel", "oneAPI", "compiler", "latest",
+                )
+                if os.path.isdir(oneapi_cl):
+                    cl_inc = os.path.join(oneapi_cl, "include")
+                    cl_lib = os.path.join(oneapi_cl, "lib")
+                    if os.path.isfile(os.path.join(cl_inc, "CL", "cl.h")):
+                        _add_directory(include_dirs, cl_inc)
+                        _add_directory(library_dirs, cl_lib)
+                        self.compiler.include_dirs = (
+                            include_dirs + self.compiler.include_dirs
+                        )
+                        self.compiler.library_dirs = (
+                            library_dirs + self.compiler.library_dirs
+                        )
+            if _find_include_file(self, "CL/cl.h") or _find_include_file(
+                self, "OpenCL/cl.h"
+            ):
+                if _find_library_file(self, "OpenCL"):
+                    feature.set("opencl", "OpenCL")
+
+        if feature.want("cuda"):
+            _dbg("Looking for CUDA (Driver API + NVRTC)")
+            if _find_include_file(self, "cuda.h"):
+                has_cuda = _find_library_file(self, "cuda")
+                has_nvrtc = _find_library_file(self, "nvrtc")
+                if has_cuda and has_nvrtc:
+                    feature.set("cuda", "cuda")
+
         if feature.want("avif"):
             _dbg("Looking for avif")
             if avif_h := _find_include_file(self, "avif/avif.h"):
@@ -1001,6 +1041,21 @@ class pil_build_ext(build_ext):
         tk_libs = ["psapi"] if sys.platform in ("win32", "cygwin") else []
         self._update_extension("PIL._imagingtk", tk_libs)
 
+        gpu_ok = feature.get("opencl") or feature.get("cuda")
+        if gpu_ok:
+            gpu_libs: list[str | bool | None] = []
+            gpu_defs: list[tuple[str, str | None]] = []
+            if feature.get("opencl"):
+                gpu_libs.append(feature.get("opencl"))
+                gpu_defs.append(("HAVE_OPENCL", None))
+            if feature.get("cuda"):
+                gpu_libs.append(feature.get("cuda"))
+                gpu_libs.append("nvrtc")
+                gpu_defs.append(("HAVE_CUDA", None))
+            self._update_extension("PIL._imaging_gpu", gpu_libs, gpu_defs)
+        else:
+            self._remove_extension("PIL._imaging_gpu")
+
         build_ext.build_extensions(self)
 
         #
@@ -1041,6 +1096,8 @@ class pil_build_ext(build_ext):
             (feature.get("webp"), "WEBP"),
             (feature.get("xcb"), "XCB (X protocol)"),
             (feature.get("avif"), "LIBAVIF"),
+            (feature.get("opencl"), "OPENCL (GPU)"),
+            (feature.get("cuda"), "CUDA (GPU)"),
         ]
 
         all = 1
@@ -1095,6 +1152,18 @@ ext_modules = [
         libraries=None if sys.platform == "win32" else ["m"],
     ),
     Extension("PIL._imagingmorph", ["src/_imagingmorph.c"]),
+    Extension(
+        "PIL._imaging_gpu",
+        [
+            "src/_imaging_gpu.c",
+            "src/libImaging/gpu/GpuImaging.c",
+            "src/libImaging/gpu/GpuOpenCL.c",
+            "src/libImaging/gpu/GpuCuda.c",
+            "src/libImaging/Storage.c",
+            "src/libImaging/Palette.c",
+            "src/libImaging/Mode.c",
+        ],
+    ),
 ]
 
 

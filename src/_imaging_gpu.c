@@ -47,7 +47,7 @@ ImagingError_ValueError(const char *message) {
 }
 
 /* -------------------------------------------------------------------- */
-/* OBJECT ADMINISTRATION                                                 */
+/* OBJECT ADMINISTRATION                                                  */
 /* -------------------------------------------------------------------- */
 
 typedef struct {

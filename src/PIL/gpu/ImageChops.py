@@ -6,7 +6,7 @@ Mirrors PIL.ImageChops, executing pixel-level binary ops on the GPU.
 
 from __future__ import annotations
 
-from PIL import _imaging_gpu as _core
+from PIL import _imaging_gpu as _core  # type: ignore[attr-defined]
 
 from .Image import Image
 

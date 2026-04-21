@@ -18,7 +18,7 @@ class Iterator:
     the CPU Image and uploaded one at a time.
     """
 
-    def __init__(self, im):
+    def __init__(self, im: _GpuImage.Image | str | object) -> None:
         if isinstance(im, _GpuImage.Image):
             # Single GPU image — wrap as single-frame sequence
             self._frames = [im]
@@ -40,18 +40,18 @@ class Iterator:
             self._frames = []
             try:
                 while True:
-                    im.seek(im.tell())
-                    self._frames.append(_GpuImage.Image.from_cpu(im.copy()))
-                    im.seek(im.tell() + 1)
+                    im.seek(im.tell())  # type: ignore[attr-defined]
+                    self._frames.append(_GpuImage.Image.from_cpu(im.copy()))  # type: ignore[attr-defined]
+                    im.seek(im.tell() + 1)  # type: ignore[attr-defined]
             except EOFError:
                 pass
         self._pos = 0
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator:
         self._pos = 0
         return self
 
-    def __next__(self):
+    def __next__(self) -> _GpuImage.Image:
         if self._pos >= len(self._frames):
             raise StopIteration
         frame = self._frames[self._pos]

@@ -9,7 +9,7 @@ from __future__ import annotations
 import atexit
 
 try:
-    from PIL import _imaging_gpu as _core
+    from PIL import _imaging_gpu as _core  # type: ignore[attr-defined]
 except ImportError:
     _core = None
 

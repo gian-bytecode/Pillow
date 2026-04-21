@@ -77,7 +77,7 @@ class Stat:
         return [math.sqrt(v) for v in self.var]
 
     @property
-    def extrema(self) -> list[tuple]:
+    def extrema(self) -> list[tuple[int, int]]:
         result = []
         for bh in self._band_histograms:
             lo = next((i for i, v in enumerate(bh) if v), 0)

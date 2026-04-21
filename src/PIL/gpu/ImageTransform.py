@@ -19,26 +19,26 @@ MESH = Transform.MESH
 class AffineTransform:
     method = AFFINE
 
-    def __init__(self, data):
+    def __init__(self, data: tuple[float, ...] | list[float]) -> None:
         self.data = data
 
 
 class ExtentTransform:
     method = EXTENT
 
-    def __init__(self, data):
+    def __init__(self, data: tuple[float, ...] | list[float]) -> None:
         self.data = data
 
 
 class PerspectiveTransform:
     method = PERSPECTIVE
 
-    def __init__(self, data):
+    def __init__(self, data: tuple[float, ...] | list[float]) -> None:
         self.data = data
 
 
 class QuadTransform:
     method = QUAD
 
-    def __init__(self, data):
+    def __init__(self, data: tuple[float, ...] | list[float]) -> None:
         self.data = data

@@ -23,21 +23,26 @@ class MorphOp:
     Downloads to CPU, applies the operation, and re-uploads.
     """
 
-    def __init__(self, lut=None, op_name=None, patterns=None):
-        self._cpu_op = _CPUMorph.MorphOp(lut=lut, op_name=op_name, patterns=patterns)
+    def __init__(
+        self,
+        lut: object = None,
+        op_name: str | None = None,
+        patterns: list[str] | None = None,
+    ) -> None:
+        self._cpu_op = _CPUMorph.MorphOp(lut=lut, op_name=op_name, patterns=patterns)  # type: ignore[arg-type]
 
-    def apply(self, image: _GpuImage.Image):
+    def apply(self, image: _GpuImage.Image) -> tuple[int, _GpuImage.Image]:
         """Apply the morphological operation. Returns (count, image)."""
         cpu = image.to_cpu()
         count, result = self._cpu_op.apply(cpu)
         return count, _GpuImage.Image.from_cpu(result)
 
-    def match(self, image: _GpuImage.Image):
+    def match(self, image: _GpuImage.Image) -> list[tuple[int, int]]:
         """Get list of matching pixel coordinates."""
         cpu = image.to_cpu()
         return self._cpu_op.match(cpu)
 
-    def get_on_pixels(self, image: _GpuImage.Image):
+    def get_on_pixels(self, image: _GpuImage.Image) -> list[tuple[int, int]]:
         """Get list of non-zero pixel coordinates."""
         cpu = image.to_cpu()
         return self._cpu_op.get_on_pixels(cpu)

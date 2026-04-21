@@ -7,6 +7,9 @@ Operations keep data in VRAM.  Transfer to/from CPU is explicit via
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from typing import Any
+
 from PIL import Image as _CPUImage
 
 from . import _core
@@ -22,15 +25,17 @@ class Image:
 
     __slots__ = ("_im",)
 
-    def __init__(self, gpu_core_image):
-        self._im = gpu_core_image
+    def __init__(self, gpu_core_image: Any) -> None:
+        self._im: Any = gpu_core_image
 
     # ------------------------------------------------------------------ #
     # Factories                                                          #
     # ------------------------------------------------------------------ #
 
     @staticmethod
-    def new(mode: str, size: tuple[int, int], color=0) -> Image:
+    def new(
+        mode: str, size: tuple[int, int], color: int | tuple[int, ...] = 0
+    ) -> Image:
         """Create a new GPU image filled with *color*."""
         _ensure_backend()
         if isinstance(color, int):
@@ -63,12 +68,16 @@ class Image:
         return Image(gpu_im)
 
     @staticmethod
-    def open(fp, mode: str = "r", formats=None) -> Image:
+    def open(
+        fp: str | object,
+        mode: str = "r",
+        formats: list[str] | tuple[str, ...] | None = None,
+    ) -> Image:
         """Open an image file and upload it to the GPU.
 
         Accepts the same arguments as :func:`PIL.Image.open`.
         """
-        cpu = _CPUImage.open(fp, mode=mode, formats=formats)
+        cpu = _CPUImage.open(fp, mode="r", formats=formats)  # type: ignore[arg-type]
         cpu.load()  # ensure pixels are decoded
         return Image.from_cpu(cpu)
 
@@ -144,7 +153,7 @@ class Image:
         self,
         size: tuple[int, int],
         method: int,
-        data=None,
+        data: tuple[float, ...] | list[float] | None = None,
         resample: int = Resampling.NEAREST,
         fill: int = 1,
     ) -> Image:
@@ -153,7 +162,7 @@ class Image:
         coeffs = tuple(float(x) for x in data) + (0.0,) * (8 - len(data))
         return Image(self._im.transform(size, method, coeffs, resample, fill))
 
-    def filter(self, kernel) -> Image:
+    def filter(self, kernel: object) -> Image:
         """Apply an image filter.
 
         *kernel* can be a :class:`PIL.ImageFilter.Kernel`,
@@ -179,7 +188,11 @@ class Image:
         msg = f"unsupported filter type: {type(kernel)}"
         raise TypeError(msg)
 
-    def point(self, lut, mode=None) -> Image:
+    def point(
+        self,
+        lut: list[int] | bytes | Callable[[int], int],
+        mode: str | None = None,
+    ) -> Image:
         """Apply a point transform.
 
         If *lut* is a callable, it's called for each value 0-255.
@@ -220,7 +233,7 @@ class Image:
     def putchannel(self, channel_im: Image, channel: int) -> Image:
         return Image(self._im.putband(channel_im._im, channel))
 
-    def split(self):
+    def split(self) -> tuple[Image, ...]:
         """Split into individual band images."""
         parts = self._im.split()
         return tuple(Image(p) for p in parts)
@@ -233,7 +246,12 @@ class Image:
         """Extract a rectangular region."""
         return Image(self._im.crop(box))
 
-    def paste(self, im: Image, box=None, mask=None) -> None:
+    def paste(
+        self,
+        im: Image,
+        box: tuple[int, int] | tuple[int, int, int, int] | int | None = None,
+        mask: Image | None = None,
+    ) -> None:
         """Paste another image onto this one (in-place)."""
         dx, dy = 0, 0
         if box is not None:
@@ -244,7 +262,7 @@ class Image:
         mask_im = mask._im if mask is not None else None
         self._im.paste(im._im, (dx, dy), mask_im)
 
-    def expand(self, border: int, fill=0) -> Image:
+    def expand(self, border: int, fill: int | tuple[int, ...] = 0) -> Image:
         """Add a border around the image."""
         if isinstance(fill, int):
             fill = (fill,) * 4
@@ -262,7 +280,7 @@ class Image:
         """Return bounding box of non-zero pixels."""
         return self._im.getbbox(int(alpha_only))
 
-    def getextrema(self):
+    def getextrema(self) -> tuple[tuple[int, int], ...] | tuple[int, int]:
         """Return min/max values per band."""
         return self._im.getextrema()
 
@@ -274,7 +292,7 @@ class Image:
         """Randomly displace pixels."""
         return Image(self._im.effect_spread(distance))
 
-    def reduce(self, factor) -> Image:
+    def reduce(self, factor: int | tuple[int, int]) -> Image:
         """Reduce image by integer factor (box averaging).
         factor can be an int or (factor_x, factor_y) tuple."""
         if isinstance(factor, int):
@@ -339,7 +357,7 @@ class Image:
     # Statistics                                                         #
     # ------------------------------------------------------------------ #
 
-    def histogram(self):
+    def histogram(self) -> list[int]:
         """Return a list of pixel counts, one for each pixel value."""
         return self._im.histogram()
 
@@ -347,21 +365,23 @@ class Image:
     # Save (convenience — downloads to CPU then saves)                   #
     # ------------------------------------------------------------------ #
 
-    def save(self, fp, format=None, **params):
+    def save(
+        self, fp: str | object, format: str | None = None, **params: object
+    ) -> None:
         """Download to CPU and save via :meth:`PIL.Image.Image.save`."""
-        self.to_cpu().save(fp, format=format, **params)
+        self.to_cpu().save(fp, format=format, **params)  # type: ignore[arg-type]
 
     # ------------------------------------------------------------------ #
     # Representation                                                     #
     # ------------------------------------------------------------------ #
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f"<PIL.gpu.Image mode={self.mode} size={self.width}x{self.height} "
             f"backend={self.backend}>"
         )
 
-    def __del__(self):
+    def __del__(self) -> None:
         # _im handles its own C-level cleanup via tp_dealloc
         pass
 
@@ -371,11 +391,15 @@ class Image:
 # -------------------------------------------------------------------- #
 
 
-def new(mode: str, size: tuple[int, int], color=0) -> Image:
+def new(mode: str, size: tuple[int, int], color: int | tuple[int, ...] = 0) -> Image:
     return Image.new(mode, size, color)
 
 
-def open(fp, mode: str = "r", formats=None) -> Image:
+def open(
+    fp: str | object,
+    mode: str = "r",
+    formats: list[str] | tuple[str, ...] | None = None,
+) -> Image:
     return Image.open(fp, mode=mode, formats=formats)
 
 
@@ -391,7 +415,7 @@ def alpha_composite(im1: Image, im2: Image) -> Image:
     return Image.alpha_composite(im1, im2)
 
 
-def merge(mode: str, bands) -> Image:
+def merge(mode: str, bands: list[Image] | tuple[Image, ...]) -> Image:
     """Merge single-band GPU images into a multi-band image."""
     _ensure_backend()
     band_ims = [b._im for b in bands]

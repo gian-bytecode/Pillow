@@ -6,7 +6,7 @@ Mirrors PIL.ImageOps where possible.
 
 from __future__ import annotations
 
-from PIL import _imaging_gpu as _core
+from PIL import _imaging_gpu as _core  # type: ignore[attr-defined]
 
 from .Image import Image, Resampling
 
@@ -96,7 +96,7 @@ def pad(
     image: Image,
     size: tuple[int, int],
     method: int = Resampling.BILINEAR,
-    color=0,
+    color: int | tuple[int, ...] = 0,
     centering: tuple[float, float] = (0.5, 0.5),
 ) -> Image:
     """Resize to fit and pad to exact *size*."""
@@ -115,13 +115,17 @@ def crop(image: Image, border: int = 0) -> Image:
     return image.crop((border, border, w - border, h - border))
 
 
-def expand(image: Image, border: int = 0, fill=0) -> Image:
+def expand(image: Image, border: int = 0, fill: int | tuple[int, ...] = 0) -> Image:
     """Add a border around the image."""
     return image.expand(border, fill)
 
 
 def autocontrast(
-    image: Image, cutoff=0, ignore=None, mask=None, preserve_tone=False
+    image: Image,
+    cutoff: float | tuple[float, float] = 0,
+    ignore: int | list[int] | None = None,
+    mask: object = None,
+    preserve_tone: bool = False,
 ) -> Image:
     """Normalize image contrast by histogram stretching."""
     h = image.histogram()
@@ -174,7 +178,13 @@ def autocontrast(
 
 
 def colorize(
-    image: Image, black, white, mid=None, blackpoint=0, whitepoint=255, midpoint=127
+    image: Image,
+    black: str | tuple[int, ...],
+    white: str | tuple[int, ...],
+    mid: str | tuple[int, ...] | None = None,
+    blackpoint: int = 0,
+    whitepoint: int = 255,
+    midpoint: int = 127,
 ) -> Image:
     """Colorize a grayscale image (CPU fallback)."""
     from PIL import ImageOps as _CPUOps
@@ -186,7 +196,7 @@ def colorize(
     return Image.from_cpu(result)
 
 
-def equalize(image: Image, mask=None) -> Image:
+def equalize(image: Image, mask: object = None) -> Image:
     """Equalize the image histogram."""
     h = image.histogram()
     bands = image.bands
@@ -233,10 +243,12 @@ def exif_transpose(image: Image) -> Image:
     return image
 
 
-def deform(image: Image, deformer, resample=Resampling.BILINEAR) -> Image:
+def deform(
+    image: Image, deformer: object, resample: int = Resampling.BILINEAR
+) -> Image:
     """Deform image using a deformer object (CPU fallback)."""
     from PIL import ImageOps as _CPUOps
 
     cpu = image.to_cpu()
-    result = _CPUOps.deform(cpu, deformer, resample=resample)
+    result = _CPUOps.deform(cpu, deformer, resample=resample)  # type: ignore[arg-type]
     return Image.from_cpu(result)

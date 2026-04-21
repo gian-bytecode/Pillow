@@ -19,7 +19,7 @@ def check_gpu() -> bool:
         return False
 
 
-def get_gpu_backend():
+def get_gpu_backend() -> str | None:
     """Return the active GPU backend name, or None."""
     try:
         return get_backend_name()
@@ -27,7 +27,7 @@ def get_gpu_backend():
         return None
 
 
-def get_gpu_device():
+def get_gpu_device() -> str | None:
     """Return the GPU device name, or None."""
     try:
         return get_device_name()

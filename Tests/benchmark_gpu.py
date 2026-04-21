@@ -8,11 +8,14 @@ from __future__ import annotations
 
 import statistics
 import time
+from collections.abc import Callable
 
 from PIL import Image, ImageFilter
 
 
-def _bench(label, func, warmup=2, runs=10):
+def _bench(
+    label: str, func: Callable[[], object], warmup: int = 2, runs: int = 10
+) -> float:
     """Run *func* with warmup and return median time in ms."""
     for _ in range(warmup):
         func()
@@ -25,8 +28,8 @@ def _bench(label, func, warmup=2, runs=10):
     return med
 
 
-def main():
-    import _imaging_gpu as g
+def main() -> None:
+    import _imaging_gpu as g  # type: ignore[import-not-found]
 
     from PIL.gpu import Image as GpuImage
 
@@ -121,10 +124,10 @@ def main():
         )
 
         # --- Full pipeline: upload + blur + resize + download ---
-        def cpu_pipeline():
+        def cpu_pipeline() -> object:
             return cpu_img.filter(ImageFilter.GaussianBlur(5)).resize(new_size)
 
-        def gpu_pipeline():
+        def gpu_pipeline() -> object:
             g_im = GpuImage.from_cpu(cpu_img)
             g_blur = g_im.gaussian_blur(5)
             g_small = g_blur.resize(new_size)

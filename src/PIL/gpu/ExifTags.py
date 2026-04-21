@@ -1,3 +1,5 @@
 """PIL.gpu.ExifTags — Re-export of PIL.ExifTags."""
-from PIL.ExifTags import *  # noqa: F401,F403
-from PIL.ExifTags import Base, GPS, IFD, Interop
+
+from __future__ import annotations
+
+from PIL.ExifTags import *  # noqa: F403

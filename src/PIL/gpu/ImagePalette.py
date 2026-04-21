@@ -6,5 +6,7 @@ to full-color before GPU upload), so this module simply re-exports
 PIL.ImagePalette.
 """
 
-from PIL.ImagePalette import *  # noqa: F401,F403
+from __future__ import annotations
+
+from PIL.ImagePalette import *  # noqa: F403
 from PIL.ImagePalette import ImagePalette  # noqa: F401

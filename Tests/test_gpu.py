@@ -2,6 +2,8 @@
 Tests for PIL.gpu — GPU-accelerated imaging with OpenCL/CUDA.
 """
 
+from __future__ import annotations
+
 import pytest
 
 from PIL import Image
@@ -49,7 +51,7 @@ class TestLowLevelGPU:
 
     def test_from_bytes_to_bytes_roundtrip(self):
         # RGB internally stored as 4 bytes/pixel (RGBX)
-        data = b"\x64\x96\xC8\x00" * 100  # 10x10 RGB
+        data = b"\x64\x96\xc8\x00" * 100  # 10x10 RGB
         im = _imaging_gpu.from_bytes("RGB", (10, 10), data)
         result = im.to_bytes()
         assert result == data
@@ -61,7 +63,7 @@ class TestLowLevelGPU:
         assert result == data
 
     def test_from_bytes_RGBA_roundtrip(self):
-        data = b"\xFF\x80\x40\xC0" * 400  # 20x20 RGBA
+        data = b"\xff\x80\x40\xc0" * 400  # 20x20 RGBA
         im = _imaging_gpu.from_bytes("RGBA", (20, 20), data)
         result = im.to_bytes()
         assert result == data
@@ -232,8 +234,8 @@ class TestGpuImageOps:
     """Tests for PIL.gpu.ImageOps."""
 
     def test_invert(self):
-        from PIL.gpu.Image import Image as GpuImage
         from PIL.gpu import ImageOps
+        from PIL.gpu.Image import Image as GpuImage
 
         cpu = Image.new("RGB", (50, 50), (100, 150, 200))
         gpu = GpuImage.from_cpu(cpu)
@@ -243,8 +245,8 @@ class TestGpuImageOps:
         assert result.size == (50, 50)
 
     def test_grayscale(self):
-        from PIL.gpu.Image import Image as GpuImage
         from PIL.gpu import ImageOps
+        from PIL.gpu.Image import Image as GpuImage
 
         cpu = Image.new("RGB", (50, 50), (255, 255, 255))
         gpu = GpuImage.from_cpu(cpu)
@@ -252,8 +254,8 @@ class TestGpuImageOps:
         assert gray.mode == "L"
 
     def test_flip(self):
-        from PIL.gpu.Image import Image as GpuImage
         from PIL.gpu import ImageOps
+        from PIL.gpu.Image import Image as GpuImage
 
         cpu = Image.new("RGB", (50, 50), (100, 100, 100))
         gpu = GpuImage.from_cpu(cpu)
@@ -261,8 +263,8 @@ class TestGpuImageOps:
         assert flipped.size == (50, 50)
 
     def test_mirror(self):
-        from PIL.gpu.Image import Image as GpuImage
         from PIL.gpu import ImageOps
+        from PIL.gpu.Image import Image as GpuImage
 
         cpu = Image.new("RGB", (50, 50), (100, 100, 100))
         gpu = GpuImage.from_cpu(cpu)
@@ -279,8 +281,8 @@ class TestGpuImageEnhance:
     """Tests for PIL.gpu.ImageEnhance."""
 
     def test_brightness(self):
-        from PIL.gpu.Image import Image as GpuImage
         from PIL.gpu import ImageEnhance
+        from PIL.gpu.Image import Image as GpuImage
 
         cpu = Image.new("RGB", (100, 100), (100, 100, 100))
         gpu = GpuImage.from_cpu(cpu)
@@ -289,8 +291,8 @@ class TestGpuImageEnhance:
         assert result.size == (100, 100)
 
     def test_contrast(self):
-        from PIL.gpu.Image import Image as GpuImage
         from PIL.gpu import ImageEnhance
+        from PIL.gpu.Image import Image as GpuImage
 
         cpu = Image.new("RGB", (100, 100), (100, 100, 100))
         gpu = GpuImage.from_cpu(cpu)
@@ -428,8 +430,8 @@ class TestGpuImageOpsNew:
     """Tests for new ImageOps functions."""
 
     def test_posterize(self):
-        from PIL.gpu.Image import Image as GpuImage
         from PIL.gpu import ImageOps
+        from PIL.gpu.Image import Image as GpuImage
 
         cpu = Image.new("RGB", (50, 50), (123, 200, 50))
         gpu = GpuImage.from_cpu(cpu)
@@ -437,8 +439,8 @@ class TestGpuImageOpsNew:
         assert result.size == (50, 50)
 
     def test_solarize(self):
-        from PIL.gpu.Image import Image as GpuImage
         from PIL.gpu import ImageOps
+        from PIL.gpu.Image import Image as GpuImage
 
         cpu = Image.new("RGB", (50, 50), (200, 50, 100))
         gpu = GpuImage.from_cpu(cpu)
@@ -446,8 +448,8 @@ class TestGpuImageOpsNew:
         assert result.size == (50, 50)
 
     def test_equalize(self):
-        from PIL.gpu.Image import Image as GpuImage
         from PIL.gpu import ImageOps
+        from PIL.gpu.Image import Image as GpuImage
 
         cpu = Image.new("L", (50, 50), 128)
         gpu = GpuImage.from_cpu(cpu)
@@ -455,8 +457,8 @@ class TestGpuImageOpsNew:
         assert result.size == (50, 50)
 
     def test_autocontrast(self):
-        from PIL.gpu.Image import Image as GpuImage
         from PIL.gpu import ImageOps
+        from PIL.gpu.Image import Image as GpuImage
 
         cpu = Image.new("L", (50, 50), 128)
         gpu = GpuImage.from_cpu(cpu)
@@ -464,8 +466,8 @@ class TestGpuImageOpsNew:
         assert result.size == (50, 50)
 
     def test_expand(self):
-        from PIL.gpu.Image import Image as GpuImage
         from PIL.gpu import ImageOps
+        from PIL.gpu.Image import Image as GpuImage
 
         cpu = Image.new("RGB", (50, 50), (255, 0, 0))
         gpu = GpuImage.from_cpu(cpu)
@@ -473,8 +475,8 @@ class TestGpuImageOpsNew:
         assert result.size == (70, 70)
 
     def test_crop(self):
-        from PIL.gpu.Image import Image as GpuImage
         from PIL.gpu import ImageOps
+        from PIL.gpu.Image import Image as GpuImage
 
         cpu = Image.new("RGB", (100, 100), (255, 0, 0))
         gpu = GpuImage.from_cpu(cpu)
@@ -482,8 +484,8 @@ class TestGpuImageOpsNew:
         assert result.size == (80, 80)
 
     def test_pad(self):
-        from PIL.gpu.Image import Image as GpuImage
         from PIL.gpu import ImageOps
+        from PIL.gpu.Image import Image as GpuImage
 
         cpu = Image.new("RGB", (100, 50), (255, 0, 0))
         gpu = GpuImage.from_cpu(cpu)
@@ -491,21 +493,22 @@ class TestGpuImageOpsNew:
         assert result.size == (100, 100)
 
     def test_cover(self):
-        from PIL.gpu.Image import Image as GpuImage
         from PIL.gpu import ImageOps
+        from PIL.gpu.Image import Image as GpuImage
 
         cpu = Image.new("RGB", (100, 50), (255, 0, 0))
         gpu = GpuImage.from_cpu(cpu)
         result = ImageOps.cover(gpu, (200, 200))
-        assert result.width >= 200 and result.height >= 200
+        assert result.width >= 200
+        assert result.height >= 200
 
 
 class TestGpuImageChopsNew:
     """Tests for new ImageChops functions."""
 
     def test_offset(self):
-        from PIL.gpu.Image import Image as GpuImage
         from PIL.gpu import ImageChops
+        from PIL.gpu.Image import Image as GpuImage
 
         cpu = Image.new("RGB", (100, 100), (255, 0, 0))
         gpu = GpuImage.from_cpu(cpu)
@@ -513,8 +516,8 @@ class TestGpuImageChopsNew:
         assert result.size == (100, 100)
 
     def test_constant(self):
-        from PIL.gpu.Image import Image as GpuImage
         from PIL.gpu import ImageChops
+        from PIL.gpu.Image import Image as GpuImage
 
         cpu = Image.new("L", (50, 50), 0)
         gpu = GpuImage.from_cpu(cpu)
@@ -522,8 +525,8 @@ class TestGpuImageChopsNew:
         assert result.size == (50, 50)
 
     def test_duplicate(self):
-        from PIL.gpu.Image import Image as GpuImage
         from PIL.gpu import ImageChops
+        from PIL.gpu.Image import Image as GpuImage
 
         cpu = Image.new("RGB", (50, 50), (100, 100, 100))
         gpu = GpuImage.from_cpu(cpu)
@@ -535,8 +538,8 @@ class TestGpuNewModules:
     """Tests for new GPU modules."""
 
     def test_image_draw_rectangle(self):
-        from PIL.gpu.Image import Image as GpuImage
         from PIL.gpu import ImageDraw
+        from PIL.gpu.Image import Image as GpuImage
 
         gpu = GpuImage.new("RGB", (100, 100), (0, 0, 0))
         draw = ImageDraw.Draw(gpu)
@@ -545,8 +548,8 @@ class TestGpuNewModules:
         assert result.getpixel((30, 30)) == (255, 0, 0)
 
     def test_image_sequence(self):
-        from PIL.gpu.Image import Image as GpuImage
         from PIL.gpu import ImageSequence
+        from PIL.gpu.Image import Image as GpuImage
 
         gpu = GpuImage.new("RGB", (50, 50), (128, 128, 128))
         frames = list(ImageSequence.Iterator(gpu))
@@ -554,19 +557,25 @@ class TestGpuNewModules:
 
     def test_image_transform_constants(self):
         from PIL.gpu import ImageTransform
+
         assert ImageTransform.AFFINE is not None
         assert ImageTransform.PERSPECTIVE is not None
 
     def test_image_palette_import(self):
         from PIL.gpu import ImagePalette
+
         assert hasattr(ImagePalette, "ImagePalette")
 
 
 class TestGpuNewKernels:
-    """Tests for newly added GPU-native kernels (reduce, rank_filter, mode_filter, YCbCr)."""
+    """Tests for newly added GPU-native kernels.
+
+    Covers: reduce, rank_filter, mode_filter, YCbCr.
+    """
 
     def test_reduce_2x(self):
         from PIL.gpu.Image import Image as GpuImage
+
         # 100x100 white image -> reduce by 2 -> 50x50
         cpu = Image.new("RGB", (100, 100), (200, 100, 50))
         gpu = GpuImage.from_cpu(cpu)
@@ -580,6 +589,7 @@ class TestGpuNewKernels:
 
     def test_reduce_3x(self):
         from PIL.gpu.Image import Image as GpuImage
+
         cpu = Image.new("L", (99, 99), 128)
         gpu = GpuImage.from_cpu(cpu)
         reduced = gpu.reduce(3)
@@ -589,6 +599,7 @@ class TestGpuNewKernels:
 
     def test_reduce_asymmetric(self):
         from PIL.gpu.Image import Image as GpuImage
+
         cpu = Image.new("RGB", (120, 80), (10, 20, 30))
         gpu = GpuImage.from_cpu(cpu)
         reduced = gpu.reduce((2, 4))
@@ -597,11 +608,12 @@ class TestGpuNewKernels:
 
     def test_rank_filter_median(self):
         from PIL.gpu.Image import Image as GpuImage
+
         # Create image with salt-and-pepper noise on gray background
         cpu = Image.new("L", (64, 64), 128)
         pixels = cpu.load()
         pixels[32, 32] = 255  # salt
-        pixels[33, 33] = 0    # pepper
+        pixels[33, 33] = 0  # pepper
         gpu = GpuImage.from_cpu(cpu)
         # Median filter (3x3 window, rank=4 = center of 9 values)
         filtered = gpu.rank_filter(3, 4)
@@ -612,6 +624,7 @@ class TestGpuNewKernels:
 
     def test_rank_filter_min(self):
         from PIL.gpu.Image import Image as GpuImage
+
         cpu = Image.new("L", (32, 32), 100)
         pixels = cpu.load()
         pixels[16, 16] = 50
@@ -625,6 +638,7 @@ class TestGpuNewKernels:
 
     def test_rank_filter_max(self):
         from PIL.gpu.Image import Image as GpuImage
+
         cpu = Image.new("L", (32, 32), 100)
         pixels = cpu.load()
         pixels[16, 16] = 200
@@ -637,6 +651,7 @@ class TestGpuNewKernels:
 
     def test_mode_filter(self):
         from PIL.gpu.Image import Image as GpuImage
+
         # Create L image where most values are 100, a few are 200
         cpu = Image.new("L", (32, 32), 100)
         pixels = cpu.load()
@@ -649,6 +664,7 @@ class TestGpuNewKernels:
 
     def test_convert_ycbcr_to_rgb(self):
         from PIL.gpu.Image import Image as GpuImage
+
         # Create a YCbCr image and convert to RGB on GPU
         cpu_rgb = Image.new("RGB", (32, 32), (255, 0, 0))
         cpu_ycbcr = cpu_rgb.convert("YCbCr")

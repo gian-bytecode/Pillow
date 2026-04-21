@@ -7,7 +7,6 @@ Handles lazy initialization and shutdown of the GPU compute backend.
 from __future__ import annotations
 
 import atexit
-from typing import Optional
 
 try:
     from PIL import _imaging_gpu as _core
@@ -23,10 +22,11 @@ def _ensure_backend() -> None:
     if _initialized:
         return
     if _core is None:
-        raise RuntimeError(
+        msg = (
             "PIL._imaging_gpu is not available.  "
             "Pillow was built without GPU support (OpenCL/CUDA not found)."
         )
+        raise RuntimeError(msg)
     _core.backend_init(0)  # 0 = auto-select
     _initialized = True
     atexit.register(_shutdown)
@@ -40,13 +40,13 @@ def _shutdown() -> None:
         _initialized = False
 
 
-def get_backend_name() -> Optional[str]:
+def get_backend_name() -> str | None:
     """Return the active backend name ('OpenCL' or 'CUDA'), or None."""
     _ensure_backend()
     return _core.get_backend_name()
 
 
-def get_device_name() -> Optional[str]:
+def get_device_name() -> str | None:
     """Return the GPU device name, or None."""
     _ensure_backend()
     return _core.get_device_name()

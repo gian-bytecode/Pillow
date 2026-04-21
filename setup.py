@@ -891,7 +891,10 @@ class pil_build_ext(build_ext):
             if sys.platform == "win32" and not globals().get("OPENCL_ROOT"):
                 oneapi_cl = os.path.join(
                     os.environ.get("ProgramFiles(x86)", ""),
-                    "Intel", "oneAPI", "compiler", "latest",
+                    "Intel",
+                    "oneAPI",
+                    "compiler",
+                    "latest",
                 )
                 if os.path.isdir(oneapi_cl):
                     cl_inc = os.path.join(oneapi_cl, "include")

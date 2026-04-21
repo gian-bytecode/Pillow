@@ -324,8 +324,9 @@ ImagingGPU_FromImaging(Imaging im) {
 }
 
 ImagingGPU
-ImagingGPU_FromBytes(ModeID mode, int xsize, int ysize,
-                     const void *data, size_t data_len) {
+ImagingGPU_FromBytes(
+    ModeID mode, int xsize, int ysize, const void *data, size_t data_len
+) {
     if (!data) {
         return (ImagingGPU)ImagingError_ValueError("NULL data");
     }
@@ -481,13 +482,14 @@ ImagingGPU_Download(ImagingGPU gpu_im, Imaging im) {
 /* Operation dispatch macros                                             */
 /* -------------------------------------------------------------------- */
 
-#define GET_BACKEND_OR_FAIL() \
+#define GET_BACKEND_OR_FAIL()                \
     GPUBackend _b = ImagingGPU_GetBackend(); \
-    if (!_b) return (ImagingGPU)ImagingError_ValueError("No GPU backend")
+    if (!_b)                                 \
+    return (ImagingGPU)ImagingError_ValueError("No GPU backend")
 
 #define CHECK_OP_OR_FAIL(op_name) \
-    if (!_b->op_name) \
-        return (ImagingGPU)ImagingError_ValueError("GPU backend does not support " #op_name)
+    if (!_b->op_name)             \
+    return (ImagingGPU)ImagingError_ValueError("GPU backend does not support " #op_name)
 
 /* -------------------------------------------------------------------- */
 /* GPU operation wrappers (dispatch to backend)                          */
@@ -499,7 +501,8 @@ ImagingGPU_GaussianBlur(ImagingGPU imIn, float xradius, float yradius, int passe
     CHECK_OP_OR_FAIL(gaussian_blur);
 
     ImagingGPU out = ImagingGPU_NewDirty(imIn->mode, imIn->xsize, imIn->ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->gaussian_blur(_b, out, imIn, xradius, yradius, passes);
     if (err != GPU_OK) {
@@ -515,7 +518,8 @@ ImagingGPU_BoxBlur(ImagingGPU imIn, float xradius, float yradius, int n) {
     CHECK_OP_OR_FAIL(box_blur);
 
     ImagingGPU out = ImagingGPU_NewDirty(imIn->mode, imIn->xsize, imIn->ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->box_blur(_b, out, imIn, xradius, yradius, n);
     if (err != GPU_OK) {
@@ -531,7 +535,8 @@ ImagingGPU_UnsharpMask(ImagingGPU imIn, float radius, int percent, int threshold
     CHECK_OP_OR_FAIL(unsharp_mask);
 
     ImagingGPU out = ImagingGPU_NewDirty(imIn->mode, imIn->xsize, imIn->ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->unsharp_mask(_b, out, imIn, radius, percent, threshold);
     if (err != GPU_OK) {
@@ -542,13 +547,20 @@ ImagingGPU_UnsharpMask(ImagingGPU imIn, float radius, int percent, int threshold
 }
 
 ImagingGPU
-ImagingGPU_Filter(ImagingGPU imIn, int ksize_x, int ksize_y,
-                  const float *kernel, float divisor, float offset) {
+ImagingGPU_Filter(
+    ImagingGPU imIn,
+    int ksize_x,
+    int ksize_y,
+    const float *kernel,
+    float divisor,
+    float offset
+) {
     GET_BACKEND_OR_FAIL();
     CHECK_OP_OR_FAIL(filter);
 
     ImagingGPU out = ImagingGPU_NewDirty(imIn->mode, imIn->xsize, imIn->ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->filter(_b, out, imIn, ksize_x, ksize_y, kernel, divisor, offset);
     if (err != GPU_OK) {
@@ -559,13 +571,13 @@ ImagingGPU_Filter(ImagingGPU imIn, int ksize_x, int ksize_y,
 }
 
 ImagingGPU
-ImagingGPU_Resample(ImagingGPU imIn, int xsize, int ysize,
-                    int filter, float box[4]) {
+ImagingGPU_Resample(ImagingGPU imIn, int xsize, int ysize, int filter, float box[4]) {
     GET_BACKEND_OR_FAIL();
     CHECK_OP_OR_FAIL(resample);
 
     ImagingGPU out = ImagingGPU_NewDirty(imIn->mode, xsize, ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->resample(_b, out, imIn, xsize, ysize, filter, box);
     if (err != GPU_OK) {
@@ -581,7 +593,8 @@ ImagingGPU_Convert(ImagingGPU imIn, ModeID to_mode) {
     CHECK_OP_OR_FAIL(convert);
 
     ImagingGPU out = ImagingGPU_NewDirty(to_mode, imIn->xsize, imIn->ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->convert(_b, out, imIn, to_mode);
     if (err != GPU_OK) {
@@ -602,7 +615,8 @@ ImagingGPU_Blend(ImagingGPU im1, ImagingGPU im2, float alpha) {
     }
 
     ImagingGPU out = ImagingGPU_NewDirty(im1->mode, im1->xsize, im1->ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->blend(_b, out, im1, im2, alpha);
     if (err != GPU_OK) {
@@ -623,7 +637,8 @@ ImagingGPU_AlphaComposite(ImagingGPU im1, ImagingGPU im2) {
     }
 
     ImagingGPU out = ImagingGPU_NewDirty(im1->mode, im1->xsize, im1->ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->alpha_composite(_b, out, im1, im2);
     if (err != GPU_OK) {
@@ -634,8 +649,7 @@ ImagingGPU_AlphaComposite(ImagingGPU im1, ImagingGPU im2) {
 }
 
 ImagingGPU
-ImagingGPU_Chop(ImagingGPU im1, ImagingGPU im2,
-                int op, float scale, int offset) {
+ImagingGPU_Chop(ImagingGPU im1, ImagingGPU im2, int op, float scale, int offset) {
     GET_BACKEND_OR_FAIL();
     CHECK_OP_OR_FAIL(chop);
 
@@ -644,7 +658,8 @@ ImagingGPU_Chop(ImagingGPU im1, ImagingGPU im2,
     }
 
     ImagingGPU out = ImagingGPU_NewDirty(im1->mode, im1->xsize, im1->ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->chop(_b, out, im1, im2, op, scale, offset);
     if (err != GPU_OK) {
@@ -668,7 +683,8 @@ ImagingGPU_Transpose(ImagingGPU imIn, int op) {
     }
 
     ImagingGPU out = ImagingGPU_NewDirty(imIn->mode, out_w, out_h);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->transpose(_b, out, imIn, op);
     if (err != GPU_OK) {
@@ -679,13 +695,15 @@ ImagingGPU_Transpose(ImagingGPU imIn, int op) {
 }
 
 ImagingGPU
-ImagingGPU_Transform(ImagingGPU imIn, int xsize, int ysize,
-                     int method, double a[8], int filter, int fill) {
+ImagingGPU_Transform(
+    ImagingGPU imIn, int xsize, int ysize, int method, double a[8], int filter, int fill
+) {
     GET_BACKEND_OR_FAIL();
     CHECK_OP_OR_FAIL(transform);
 
     ImagingGPU out = ImagingGPU_NewDirty(imIn->mode, xsize, ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->transform(_b, out, imIn, method, a, filter, fill);
     if (err != GPU_OK) {
@@ -701,7 +719,8 @@ ImagingGPU_PointLut(ImagingGPU imIn, const UINT8 *lut, int bands) {
     CHECK_OP_OR_FAIL(point_lut);
 
     ImagingGPU out = ImagingGPU_NewDirty(imIn->mode, imIn->xsize, imIn->ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->point_lut(_b, out, imIn, lut, bands);
     if (err != GPU_OK) {
@@ -717,7 +736,8 @@ ImagingGPU_PointTransform(ImagingGPU imIn, double scale, double offset) {
     CHECK_OP_OR_FAIL(point_transform);
 
     ImagingGPU out = ImagingGPU_NewDirty(imIn->mode, imIn->xsize, imIn->ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->point_transform(_b, out, imIn, scale, offset);
     if (err != GPU_OK) {
@@ -728,13 +748,15 @@ ImagingGPU_PointTransform(ImagingGPU imIn, double scale, double offset) {
 }
 
 ImagingGPU
-ImagingGPU_ColorMatrix(ImagingGPU imIn, ModeID out_mode,
-                       const float *matrix, int ncolumns) {
+ImagingGPU_ColorMatrix(
+    ImagingGPU imIn, ModeID out_mode, const float *matrix, int ncolumns
+) {
     GET_BACKEND_OR_FAIL();
     CHECK_OP_OR_FAIL(color_matrix);
 
     ImagingGPU out = ImagingGPU_NewDirty(out_mode, imIn->xsize, imIn->ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->color_matrix(_b, out, imIn, matrix, ncolumns);
     if (err != GPU_OK) {
@@ -745,18 +767,24 @@ ImagingGPU_ColorMatrix(ImagingGPU imIn, ModeID out_mode,
 }
 
 ImagingGPU
-ImagingGPU_ColorLUT3D(ImagingGPU imIn, int table_channels,
-                      int size1D, int size2D, int size3D,
-                      const INT16 *table) {
+ImagingGPU_ColorLUT3D(
+    ImagingGPU imIn,
+    int table_channels,
+    int size1D,
+    int size2D,
+    int size3D,
+    const INT16 *table
+) {
     GET_BACKEND_OR_FAIL();
     CHECK_OP_OR_FAIL(color_lut_3d);
 
     ModeID out_mode = table_channels == 4 ? IMAGING_MODE_RGBA : imIn->mode;
     ImagingGPU out = ImagingGPU_NewDirty(out_mode, imIn->xsize, imIn->ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
-    int err = _b->color_lut_3d(_b, out, imIn, table_channels,
-                               size1D, size2D, size3D, table);
+    int err =
+        _b->color_lut_3d(_b, out, imIn, table_channels, size1D, size2D, size3D, table);
     if (err != GPU_OK) {
         ImagingGPU_Delete(out);
         return (ImagingGPU)ImagingError_ValueError("GPU color_lut_3d failed");
@@ -770,7 +798,8 @@ ImagingGPU_Fill(ModeID mode, int xsize, int ysize, const void *color) {
     CHECK_OP_OR_FAIL(fill);
 
     ImagingGPU out = ImagingGPU_NewDirty(mode, xsize, ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->fill(_b, out, color);
     if (err != GPU_OK) {
@@ -781,11 +810,14 @@ ImagingGPU_Fill(ModeID mode, int xsize, int ysize, const void *color) {
 }
 
 int
-ImagingGPU_PasteInPlace(ImagingGPU dest, ImagingGPU src,
-                        ImagingGPU mask, int dx, int dy) {
+ImagingGPU_PasteInPlace(
+    ImagingGPU dest, ImagingGPU src, ImagingGPU mask, int dx, int dy
+) {
     GPUBackend b = ImagingGPU_GetBackend();
-    if (!b) return GPU_ERROR_NO_BACKEND;
-    if (!b->paste) return GPU_ERROR_UNSUPPORTED;
+    if (!b)
+        return GPU_ERROR_NO_BACKEND;
+    if (!b->paste)
+        return GPU_ERROR_UNSUPPORTED;
 
     return b->paste(b, dest, src, mask, dx, dy, 0, 0, src->xsize, src->ysize);
 }
@@ -795,7 +827,8 @@ ImagingGPU_Copy(ImagingGPU imIn) {
     GET_BACKEND_OR_FAIL();
 
     ImagingGPU out = ImagingGPU_NewDirty(imIn->mode, imIn->xsize, imIn->ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     if (_b->copy) {
         int err = _b->copy(_b, out, imIn);
@@ -825,7 +858,8 @@ ImagingGPU_GetBand(ImagingGPU imIn, int band) {
     CHECK_OP_OR_FAIL(getband);
 
     ImagingGPU out = ImagingGPU_NewDirty(IMAGING_MODE_L, imIn->xsize, imIn->ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->getband(_b, out, imIn, band);
     if (err != GPU_OK) {
@@ -841,7 +875,8 @@ ImagingGPU_PutBand(ImagingGPU imIn, ImagingGPU band_im, int band) {
     CHECK_OP_OR_FAIL(putband);
 
     ImagingGPU out = ImagingGPU_Copy(imIn);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->putband(_b, out, band_im, band);
     if (err != GPU_OK) {
@@ -857,7 +892,8 @@ ImagingGPU_FillBand(ImagingGPU imIn, int band, int color) {
     CHECK_OP_OR_FAIL(fillband);
 
     ImagingGPU out = ImagingGPU_Copy(imIn);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->fillband(_b, out, band, color);
     if (err != GPU_OK) {
@@ -874,7 +910,8 @@ ImagingGPU_Merge(ModeID mode, ImagingGPU bands[4]) {
 
     int nbands = ImagingGPU_ModeToBands(mode);
     ImagingGPU out = ImagingGPU_NewDirty(mode, bands[0]->xsize, bands[0]->ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->merge(_b, out, bands, nbands);
     if (err != GPU_OK) {
@@ -887,8 +924,10 @@ ImagingGPU_Merge(ModeID mode, ImagingGPU bands[4]) {
 int
 ImagingGPU_Split(ImagingGPU imIn, ImagingGPU bands[4]) {
     GPUBackend b = ImagingGPU_GetBackend();
-    if (!b) return GPU_ERROR_NO_BACKEND;
-    if (!b->split) return GPU_ERROR_UNSUPPORTED;
+    if (!b)
+        return GPU_ERROR_NO_BACKEND;
+    if (!b->split)
+        return GPU_ERROR_UNSUPPORTED;
 
     for (int i = 0; i < imIn->bands; i++) {
         bands[i] = ImagingGPU_NewDirty(IMAGING_MODE_L, imIn->xsize, imIn->ysize);
@@ -904,24 +943,30 @@ ImagingGPU_Split(ImagingGPU imIn, ImagingGPU bands[4]) {
 int
 ImagingGPU_Histogram(ImagingGPU imIn, long *hist_out) {
     GPUBackend b = ImagingGPU_GetBackend();
-    if (!b) return GPU_ERROR_NO_BACKEND;
-    if (!b->histogram) return GPU_ERROR_UNSUPPORTED;
+    if (!b)
+        return GPU_ERROR_NO_BACKEND;
+    if (!b->histogram)
+        return GPU_ERROR_UNSUPPORTED;
     return b->histogram(b, imIn, hist_out);
 }
 
 int
 ImagingGPU_GetBBox(ImagingGPU imIn, int bbox[4], int alpha_only) {
     GPUBackend b = ImagingGPU_GetBackend();
-    if (!b) return GPU_ERROR_NO_BACKEND;
-    if (!b->getbbox) return GPU_ERROR_UNSUPPORTED;
+    if (!b)
+        return GPU_ERROR_NO_BACKEND;
+    if (!b->getbbox)
+        return GPU_ERROR_UNSUPPORTED;
     return b->getbbox(b, imIn, bbox, alpha_only);
 }
 
 int
 ImagingGPU_GetExtrema(ImagingGPU imIn, void *extrema) {
     GPUBackend b = ImagingGPU_GetBackend();
-    if (!b) return GPU_ERROR_NO_BACKEND;
-    if (!b->getextrema) return GPU_ERROR_UNSUPPORTED;
+    if (!b)
+        return GPU_ERROR_NO_BACKEND;
+    if (!b->getextrema)
+        return GPU_ERROR_UNSUPPORTED;
     return b->getextrema(b, imIn, extrema);
 }
 
@@ -931,7 +976,8 @@ ImagingGPU_EffectSpread(ImagingGPU imIn, int distance) {
     CHECK_OP_OR_FAIL(effect_spread);
 
     ImagingGPU out = ImagingGPU_NewDirty(imIn->mode, imIn->xsize, imIn->ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->effect_spread(_b, out, imIn, distance);
     if (err != GPU_OK) {
@@ -957,7 +1003,8 @@ ImagingGPU_Crop(ImagingGPU imIn, int x0, int y0, int x1, int y1) {
     }
 
     ImagingGPU out = ImagingGPU_NewDirty(imIn->mode, out_w, out_h);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->crop(_b, out, imIn, x0, y0, x1, y1);
     if (err != GPU_OK) {
@@ -976,7 +1023,8 @@ ImagingGPU_Expand(ImagingGPU imIn, int xmargin, int ymargin, const UINT8 *fill) 
     int out_h = imIn->ysize + 2 * ymargin;
 
     ImagingGPU out = ImagingGPU_NewDirty(imIn->mode, out_w, out_h);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->expand(_b, out, imIn, xmargin, ymargin, fill);
     if (err != GPU_OK) {
@@ -992,7 +1040,8 @@ ImagingGPU_Offset(ImagingGPU imIn, int xoffset, int yoffset) {
     CHECK_OP_OR_FAIL(offset);
 
     ImagingGPU out = ImagingGPU_NewDirty(imIn->mode, imIn->xsize, imIn->ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->offset(_b, out, imIn, xoffset, yoffset);
     if (err != GPU_OK) {
@@ -1008,7 +1057,8 @@ ImagingGPU_Negative(ImagingGPU imIn) {
     CHECK_OP_OR_FAIL(negative);
 
     ImagingGPU out = ImagingGPU_NewDirty(imIn->mode, imIn->xsize, imIn->ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->negative(_b, out, imIn);
     if (err != GPU_OK) {
@@ -1024,7 +1074,8 @@ ImagingGPU_Posterize(ImagingGPU imIn, int bits) {
     CHECK_OP_OR_FAIL(posterize);
 
     ImagingGPU out = ImagingGPU_NewDirty(imIn->mode, imIn->xsize, imIn->ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->posterize(_b, out, imIn, bits);
     if (err != GPU_OK) {
@@ -1040,7 +1091,8 @@ ImagingGPU_Solarize(ImagingGPU imIn, int threshold) {
     CHECK_OP_OR_FAIL(solarize);
 
     ImagingGPU out = ImagingGPU_NewDirty(imIn->mode, imIn->xsize, imIn->ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->solarize(_b, out, imIn, threshold);
     if (err != GPU_OK) {
@@ -1056,7 +1108,8 @@ ImagingGPU_Equalize(ImagingGPU imIn, const UINT8 *lut) {
     CHECK_OP_OR_FAIL(equalize);
 
     ImagingGPU out = ImagingGPU_NewDirty(imIn->mode, imIn->xsize, imIn->ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->equalize(_b, out, imIn, lut);
     if (err != GPU_OK) {
@@ -1072,7 +1125,8 @@ ImagingGPU_LinearGradient(ModeID mode, int xsize, int ysize, int direction) {
     CHECK_OP_OR_FAIL(linear_gradient);
 
     ImagingGPU out = ImagingGPU_NewDirty(mode, xsize, ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->linear_gradient(_b, out, direction);
     if (err != GPU_OK) {
@@ -1088,7 +1142,8 @@ ImagingGPU_RadialGradient(ModeID mode, int xsize, int ysize) {
     CHECK_OP_OR_FAIL(radial_gradient);
 
     ImagingGPU out = ImagingGPU_NewDirty(mode, xsize, ysize);
-    if (!out) return NULL;
+    if (!out)
+        return NULL;
 
     int err = _b->radial_gradient(_b, out);
     if (err != GPU_OK) {
@@ -1101,23 +1156,29 @@ ImagingGPU_RadialGradient(ModeID mode, int xsize, int ysize) {
 int
 ImagingGPU_Reduce(ImagingGPU out, ImagingGPU in, int factor_x, int factor_y) {
     GPUBackend _b = ImagingGPU_GetBackend();
-    if (!_b) return GPU_ERROR_NO_BACKEND;
-    if (!_b->reduce) return GPU_ERROR_UNSUPPORTED;
+    if (!_b)
+        return GPU_ERROR_NO_BACKEND;
+    if (!_b->reduce)
+        return GPU_ERROR_UNSUPPORTED;
     return _b->reduce(_b, out, in, factor_x, factor_y);
 }
 
 int
 ImagingGPU_RankFilter(ImagingGPU out, ImagingGPU in, int ksize, int rank) {
     GPUBackend _b = ImagingGPU_GetBackend();
-    if (!_b) return GPU_ERROR_NO_BACKEND;
-    if (!_b->rank_filter) return GPU_ERROR_UNSUPPORTED;
+    if (!_b)
+        return GPU_ERROR_NO_BACKEND;
+    if (!_b->rank_filter)
+        return GPU_ERROR_UNSUPPORTED;
     return _b->rank_filter(_b, out, in, ksize, rank);
 }
 
 int
 ImagingGPU_ModeFilter(ImagingGPU out, ImagingGPU in, int ksize) {
     GPUBackend _b = ImagingGPU_GetBackend();
-    if (!_b) return GPU_ERROR_NO_BACKEND;
-    if (!_b->mode_filter) return GPU_ERROR_UNSUPPORTED;
+    if (!_b)
+        return GPU_ERROR_NO_BACKEND;
+    if (!_b->mode_filter)
+        return GPU_ERROR_UNSUPPORTED;
     return _b->mode_filter(_b, out, in, ksize);
 }

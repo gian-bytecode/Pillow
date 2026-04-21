@@ -34,7 +34,9 @@ class Contrast(_Enhance):
         self.image = image
         hist = image.convert("L").histogram()
         num_pixels = sum(hist)
-        mean = int(sum(i * count for i, count in enumerate(hist)) / max(num_pixels, 1) + 0.5)
+        mean = int(
+            sum(i * count for i, count in enumerate(hist)) / max(num_pixels, 1) + 0.5
+        )
         self.degenerate = Image.new(image.mode, image.size, mean)
 
 

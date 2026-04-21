@@ -6,7 +6,7 @@ Mirrors PIL.ImageTransform constants and classes.
 
 from __future__ import annotations
 
-from PIL.Image import Transform  # noqa: F401
+from PIL.Image import Transform
 
 # Transform method constants (matching PIL)
 AFFINE = Transform.AFFINE

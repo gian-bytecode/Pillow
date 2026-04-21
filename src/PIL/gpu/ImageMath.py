@@ -29,6 +29,7 @@ def eval(expression, **kw):
     if hasattr(result, "im"):
         # PIL ImageMath returns an _Operand; extract the PIL Image
         from PIL import Image as PILImage
+
         if isinstance(result, PILImage.Image):
             return _GpuImage.Image.from_cpu(result)
         # _Operand case
@@ -50,6 +51,7 @@ def unsafe_eval(expression, **kw):
 
     if hasattr(result, "im"):
         from PIL import Image as PILImage
+
         if isinstance(result, PILImage.Image):
             return _GpuImage.Image.from_cpu(result)
         cpu_result = result.im

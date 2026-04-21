@@ -12,8 +12,11 @@ from .Image import Image
 
 # Re-export kernel classes — they're just data containers, usable as-is
 Kernel = _CPUImageFilter.Kernel
+
+
 class RankFilter:
     """GPU-accelerated rank filter."""
+
     name = "Rank"
 
     def __init__(self, size: int, rank: int):
@@ -26,6 +29,7 @@ class RankFilter:
 
 class MedianFilter(RankFilter):
     """GPU-accelerated median filter."""
+
     name = "Median"
 
     def __init__(self, size: int = 3):
@@ -34,6 +38,7 @@ class MedianFilter(RankFilter):
 
 class MinFilter(RankFilter):
     """GPU-accelerated min filter."""
+
     name = "Min"
 
     def __init__(self, size: int = 3):
@@ -42,6 +47,7 @@ class MinFilter(RankFilter):
 
 class MaxFilter(RankFilter):
     """GPU-accelerated max filter."""
+
     name = "Max"
 
     def __init__(self, size: int = 3):
@@ -50,6 +56,7 @@ class MaxFilter(RankFilter):
 
 class ModeFilter:
     """GPU-accelerated mode filter."""
+
     name = "Mode"
 
     def __init__(self, size: int = 3):
@@ -57,6 +64,7 @@ class ModeFilter:
 
     def filter(self, image: Image) -> Image:
         return image.mode_filter(self.size)
+
 
 # Built-in filter instances (same kernel data as PIL)
 BLUR = _CPUImageFilter.BLUR

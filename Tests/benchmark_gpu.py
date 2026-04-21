@@ -4,8 +4,11 @@ Benchmark: PIL.gpu (OpenCL/CUDA) vs PIL (CPU)
 Compares performance of common image operations on GPU vs CPU.
 """
 
-import time
+from __future__ import annotations
+
 import statistics
+import time
+
 from PIL import Image, ImageFilter
 
 
@@ -24,6 +27,7 @@ def _bench(label, func, warmup=2, runs=10):
 
 def main():
     import _imaging_gpu as g
+
     from PIL.gpu import Image as GpuImage
 
     g.backend_init(0)

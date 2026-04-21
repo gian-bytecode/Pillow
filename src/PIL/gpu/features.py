@@ -1,6 +1,8 @@
 """PIL.gpu.features — Re-export of PIL.features plus GPU feature checks."""
-from PIL.features import *  # noqa: F401,F403
-from PIL.features import check, get_supported, version
+
+from __future__ import annotations
+
+from PIL.features import *  # noqa: F403
 
 from ._backend import get_backend_name, get_device_name
 
@@ -11,6 +13,7 @@ def check_gpu() -> bool:
     """Return True if GPU acceleration is available."""
     try:
         from PIL.gpu import is_available
+
         return is_available()
     except Exception:
         return False

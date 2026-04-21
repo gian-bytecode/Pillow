@@ -7,8 +7,6 @@ don't have a native GPU kernel, we download to CPU, draw, and re-upload.
 
 from __future__ import annotations
 
-from typing import Optional, Sequence, Tuple, Union
-
 from PIL import ImageDraw as _CPUDraw
 
 from . import Image as _GpuImage
@@ -21,7 +19,7 @@ class Draw:
     and re-uploading.  Future versions may add GPU-native kernels.
     """
 
-    def __init__(self, im: "_GpuImage.Image", mode: Optional[str] = None):
+    def __init__(self, im: _GpuImage.Image, mode: str | None = None):
         self._gpu_im = im
         self._mode = mode
 
@@ -76,43 +74,118 @@ class Draw:
         draw.point(xy, fill=fill)
         self._update(cpu)
 
-    def text(self, xy, text, fill=None, font=None, anchor=None,
-             spacing=4, align="left", direction=None, features=None,
-             language=None, stroke_width=0, stroke_fill=None,
-             embedded_color=False):
+    def text(
+        self,
+        xy,
+        text,
+        fill=None,
+        font=None,
+        anchor=None,
+        spacing=4,
+        align="left",
+        direction=None,
+        features=None,
+        language=None,
+        stroke_width=0,
+        stroke_fill=None,
+        embedded_color=False,
+    ):
         cpu, draw = self._cpu_draw()
-        draw.text(xy, text, fill=fill, font=font, anchor=anchor,
-                  spacing=spacing, align=align, direction=direction,
-                  features=features, language=language,
-                  stroke_width=stroke_width, stroke_fill=stroke_fill,
-                  embedded_color=embedded_color)
+        draw.text(
+            xy,
+            text,
+            fill=fill,
+            font=font,
+            anchor=anchor,
+            spacing=spacing,
+            align=align,
+            direction=direction,
+            features=features,
+            language=language,
+            stroke_width=stroke_width,
+            stroke_fill=stroke_fill,
+            embedded_color=embedded_color,
+        )
         self._update(cpu)
 
-    def multiline_text(self, xy, text, fill=None, font=None, anchor=None,
-                       spacing=4, align="left", direction=None, features=None,
-                       language=None, stroke_width=0, stroke_fill=None,
-                       embedded_color=False):
+    def multiline_text(
+        self,
+        xy,
+        text,
+        fill=None,
+        font=None,
+        anchor=None,
+        spacing=4,
+        align="left",
+        direction=None,
+        features=None,
+        language=None,
+        stroke_width=0,
+        stroke_fill=None,
+        embedded_color=False,
+    ):
         cpu, draw = self._cpu_draw()
-        draw.multiline_text(xy, text, fill=fill, font=font, anchor=anchor,
-                            spacing=spacing, align=align, direction=direction,
-                            features=features, language=language,
-                            stroke_width=stroke_width, stroke_fill=stroke_fill,
-                            embedded_color=embedded_color)
+        draw.multiline_text(
+            xy,
+            text,
+            fill=fill,
+            font=font,
+            anchor=anchor,
+            spacing=spacing,
+            align=align,
+            direction=direction,
+            features=features,
+            language=language,
+            stroke_width=stroke_width,
+            stroke_fill=stroke_fill,
+            embedded_color=embedded_color,
+        )
         self._update(cpu)
 
-    def textbbox(self, xy, text, font=None, anchor=None, spacing=4,
-                 align="left", direction=None, features=None, language=None,
-                 stroke_width=0, embedded_color=False):
+    def textbbox(
+        self,
+        xy,
+        text,
+        font=None,
+        anchor=None,
+        spacing=4,
+        align="left",
+        direction=None,
+        features=None,
+        language=None,
+        stroke_width=0,
+        embedded_color=False,
+    ):
         cpu, draw = self._cpu_draw()
-        return draw.textbbox(xy, text, font=font, anchor=anchor,
-                             spacing=spacing, align=align, direction=direction,
-                             features=features, language=language,
-                             stroke_width=stroke_width,
-                             embedded_color=embedded_color)
+        return draw.textbbox(
+            xy,
+            text,
+            font=font,
+            anchor=anchor,
+            spacing=spacing,
+            align=align,
+            direction=direction,
+            features=features,
+            language=language,
+            stroke_width=stroke_width,
+            embedded_color=embedded_color,
+        )
 
-    def textlength(self, text, font=None, direction=None, features=None,
-                   language=None, embedded_color=False):
+    def textlength(
+        self,
+        text,
+        font=None,
+        direction=None,
+        features=None,
+        language=None,
+        embedded_color=False,
+    ):
         cpu, draw = self._cpu_draw()
-        return draw.textlength(text, font=font, direction=direction,
-                               features=features, language=language,
-                               embedded_color=embedded_color)
+        return draw.textlength(
+            text,
+            font=font,
+            direction=direction,
+            features=features,
+            language=language,
+            embedded_color=embedded_color,
+        )

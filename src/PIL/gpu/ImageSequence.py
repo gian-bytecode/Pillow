@@ -25,6 +25,7 @@ class Iterator:
         elif isinstance(im, str):
             # File path — load all frames from CPU
             from PIL import Image as PILImage
+
             cpu = PILImage.open(im)
             self._frames = []
             try:

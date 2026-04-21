@@ -11,13 +11,13 @@ from PIL import _imaging_gpu as _core
 from .Image import Image
 
 
-def add(image1: Image, image2: Image,
-        scale: float = 1.0, offset: int = 0) -> Image:
+def add(image1: Image, image2: Image, scale: float = 1.0, offset: int = 0) -> Image:
     return image1._chop(image2, _core.CHOP_ADD, scale, offset)
 
 
-def subtract(image1: Image, image2: Image,
-             scale: float = 1.0, offset: int = 0) -> Image:
+def subtract(
+    image1: Image, image2: Image, scale: float = 1.0, offset: int = 0
+) -> Image:
     return image1._chop(image2, _core.CHOP_SUBTRACT, scale, offset)
 
 

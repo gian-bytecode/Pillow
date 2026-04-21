@@ -51,8 +51,7 @@ ImagingError_ValueError(const char *message) {
 /* -------------------------------------------------------------------- */
 
 typedef struct {
-    PyObject_HEAD
-    ImagingGPU gpu_image;
+    PyObject_HEAD ImagingGPU gpu_image;
 } ImagingGPUObject;
 
 static PyTypeObject ImagingGPU_Type;
@@ -101,27 +100,46 @@ _gpu_get(PyObject *obj) {
 static ModeID
 _gpu_parse_mode(PyObject *mode_obj) {
     const char *mode_str = PyUnicode_AsUTF8(mode_obj);
-    if (!mode_str) return IMAGING_MODE_UNKNOWN;
+    if (!mode_str)
+        return IMAGING_MODE_UNKNOWN;
 
     /* Match mode strings to ModeID enum values */
-    if (strcmp(mode_str, "1") == 0) return IMAGING_MODE_1;
-    if (strcmp(mode_str, "L") == 0) return IMAGING_MODE_L;
-    if (strcmp(mode_str, "LA") == 0) return IMAGING_MODE_LA;
-    if (strcmp(mode_str, "I") == 0) return IMAGING_MODE_I;
-    if (strcmp(mode_str, "F") == 0) return IMAGING_MODE_F;
-    if (strcmp(mode_str, "P") == 0) return IMAGING_MODE_P;
-    if (strcmp(mode_str, "PA") == 0) return IMAGING_MODE_PA;
-    if (strcmp(mode_str, "RGB") == 0) return IMAGING_MODE_RGB;
-    if (strcmp(mode_str, "RGBA") == 0) return IMAGING_MODE_RGBA;
-    if (strcmp(mode_str, "RGBX") == 0) return IMAGING_MODE_RGBX;
-    if (strcmp(mode_str, "CMYK") == 0) return IMAGING_MODE_CMYK;
-    if (strcmp(mode_str, "YCbCr") == 0) return IMAGING_MODE_YCbCr;
-    if (strcmp(mode_str, "LAB") == 0) return IMAGING_MODE_LAB;
-    if (strcmp(mode_str, "HSV") == 0) return IMAGING_MODE_HSV;
-    if (strcmp(mode_str, "I;16") == 0) return IMAGING_MODE_I_16;
-    if (strcmp(mode_str, "I;16L") == 0) return IMAGING_MODE_I_16L;
-    if (strcmp(mode_str, "I;16B") == 0) return IMAGING_MODE_I_16B;
-    if (strcmp(mode_str, "I;16N") == 0) return IMAGING_MODE_I_16N;
+    if (strcmp(mode_str, "1") == 0)
+        return IMAGING_MODE_1;
+    if (strcmp(mode_str, "L") == 0)
+        return IMAGING_MODE_L;
+    if (strcmp(mode_str, "LA") == 0)
+        return IMAGING_MODE_LA;
+    if (strcmp(mode_str, "I") == 0)
+        return IMAGING_MODE_I;
+    if (strcmp(mode_str, "F") == 0)
+        return IMAGING_MODE_F;
+    if (strcmp(mode_str, "P") == 0)
+        return IMAGING_MODE_P;
+    if (strcmp(mode_str, "PA") == 0)
+        return IMAGING_MODE_PA;
+    if (strcmp(mode_str, "RGB") == 0)
+        return IMAGING_MODE_RGB;
+    if (strcmp(mode_str, "RGBA") == 0)
+        return IMAGING_MODE_RGBA;
+    if (strcmp(mode_str, "RGBX") == 0)
+        return IMAGING_MODE_RGBX;
+    if (strcmp(mode_str, "CMYK") == 0)
+        return IMAGING_MODE_CMYK;
+    if (strcmp(mode_str, "YCbCr") == 0)
+        return IMAGING_MODE_YCbCr;
+    if (strcmp(mode_str, "LAB") == 0)
+        return IMAGING_MODE_LAB;
+    if (strcmp(mode_str, "HSV") == 0)
+        return IMAGING_MODE_HSV;
+    if (strcmp(mode_str, "I;16") == 0)
+        return IMAGING_MODE_I_16;
+    if (strcmp(mode_str, "I;16L") == 0)
+        return IMAGING_MODE_I_16L;
+    if (strcmp(mode_str, "I;16B") == 0)
+        return IMAGING_MODE_I_16B;
+    if (strcmp(mode_str, "I;16N") == 0)
+        return IMAGING_MODE_I_16N;
 
     PyErr_Format(PyExc_ValueError, "unsupported mode '%s'", mode_str);
     return IMAGING_MODE_UNKNOWN;
@@ -139,13 +157,13 @@ _gpu_backend_init(PyObject *self, PyObject *args) {
     }
 
     GPUBackend backend;
-    Py_BEGIN_ALLOW_THREADS
-    backend = ImagingGPU_BackendInit(preferred_type);
+    Py_BEGIN_ALLOW_THREADS backend = ImagingGPU_BackendInit(preferred_type);
     Py_END_ALLOW_THREADS
 
-    if (!backend) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        "No GPU backend available (OpenCL/CUDA not found)");
+        if (!backend) {
+        PyErr_SetString(
+            PyExc_RuntimeError, "No GPU backend available (OpenCL/CUDA not found)"
+        );
         return NULL;
     }
     Py_RETURN_NONE;
@@ -195,14 +213,14 @@ _gpu_new(PyObject *self, PyObject *args) {
         return NULL;
     }
     ModeID mode = _gpu_parse_mode(mode_obj);
-    if (mode == IMAGING_MODE_UNKNOWN) return NULL;
+    if (mode == IMAGING_MODE_UNKNOWN)
+        return NULL;
 
     ImagingGPU im;
-    Py_BEGIN_ALLOW_THREADS
-    im = ImagingGPU_New(mode, xsize, ysize);
+    Py_BEGIN_ALLOW_THREADS im = ImagingGPU_New(mode, xsize, ysize);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(im);
+        return (PyObject *)_gpu_wrap(im);
 }
 
 static PyObject *
@@ -210,21 +228,22 @@ _gpu_fill(PyObject *self, PyObject *args) {
     PyObject *mode_obj;
     int xsize, ysize;
     int c0 = 0, c1 = 0, c2 = 0, c3 = 0;
-    if (!PyArg_ParseTuple(args, "O(ii)|(iiii)", &mode_obj,
-                          &xsize, &ysize, &c0, &c1, &c2, &c3)) {
+    if (!PyArg_ParseTuple(
+            args, "O(ii)|(iiii)", &mode_obj, &xsize, &ysize, &c0, &c1, &c2, &c3
+        )) {
         return NULL;
     }
     ModeID mode = _gpu_parse_mode(mode_obj);
-    if (mode == IMAGING_MODE_UNKNOWN) return NULL;
+    if (mode == IMAGING_MODE_UNKNOWN)
+        return NULL;
 
     UINT8 color[4] = {(UINT8)c0, (UINT8)c1, (UINT8)c2, (UINT8)c3};
 
     ImagingGPU im;
-    Py_BEGIN_ALLOW_THREADS
-    im = ImagingGPU_Fill(mode, xsize, ysize, color);
+    Py_BEGIN_ALLOW_THREADS im = ImagingGPU_Fill(mode, xsize, ysize, color);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(im);
+        return (PyObject *)_gpu_wrap(im);
 }
 
 static PyObject *
@@ -259,8 +278,10 @@ _gpu_from_imaging(PyObject *self, PyObject *args) {
                 im = (Imaging)PyLong_AsVoidPtr(id_attr);
                 Py_DECREF(id_attr);
             } else {
-                PyErr_SetString(PyExc_TypeError,
-                    "expected an Imaging capsule, object with .ptr, or .id attribute");
+                PyErr_SetString(
+                    PyExc_TypeError,
+                    "expected an Imaging capsule, object with .ptr, or .id attribute"
+                );
                 return NULL;
             }
         }
@@ -272,11 +293,10 @@ _gpu_from_imaging(PyObject *self, PyObject *args) {
     }
 
     ImagingGPU gpu_im;
-    Py_BEGIN_ALLOW_THREADS
-    gpu_im = ImagingGPU_FromImaging(im);
+    Py_BEGIN_ALLOW_THREADS gpu_im = ImagingGPU_FromImaging(im);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(gpu_im);
+        return (PyObject *)_gpu_wrap(gpu_im);
 }
 
 static PyObject *
@@ -298,11 +318,11 @@ _gpu_from_bytes(PyObject *self, PyObject *args) {
     }
 
     ImagingGPU gpu_im;
-    Py_BEGIN_ALLOW_THREADS
-    gpu_im = ImagingGPU_FromBytes(mode, xsize, ysize, buf.buf, (size_t)buf.len);
+    Py_BEGIN_ALLOW_THREADS gpu_im =
+        ImagingGPU_FromBytes(mode, xsize, ysize, buf.buf, (size_t)buf.len);
     Py_END_ALLOW_THREADS
 
-    PyBuffer_Release(&buf);
+        PyBuffer_Release(&buf);
     return (PyObject *)_gpu_wrap(gpu_im);
 }
 
@@ -321,10 +341,8 @@ _gpu_to_bytes(ImagingGPUObject *self, PyObject *args) {
     }
     char *out = PyBytes_AS_STRING(bytes_obj);
     int err;
-    Py_BEGIN_ALLOW_THREADS
-    err = ImagingGPU_DownloadRaw(gpu_im, out, total_size);
-    Py_END_ALLOW_THREADS
-    if (err != GPU_OK) {
+    Py_BEGIN_ALLOW_THREADS err = ImagingGPU_DownloadRaw(gpu_im, out, total_size);
+    Py_END_ALLOW_THREADS if (err != GPU_OK) {
         Py_DECREF(bytes_obj);
         PyErr_SetString(PyExc_RuntimeError, "GPU download failed");
         return NULL;
@@ -341,14 +359,14 @@ _gpu_blend(PyObject *self, PyObject *args) {
     }
     ImagingGPU im1 = _gpu_get(o1);
     ImagingGPU im2 = _gpu_get(o2);
-    if (!im1 || !im2) return NULL;
+    if (!im1 || !im2)
+        return NULL;
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_Blend(im1, im2, alpha);
+    Py_BEGIN_ALLOW_THREADS out = ImagingGPU_Blend(im1, im2, alpha);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
@@ -359,14 +377,14 @@ _gpu_alpha_composite(PyObject *self, PyObject *args) {
     }
     ImagingGPU im1 = _gpu_get(o1);
     ImagingGPU im2 = _gpu_get(o2);
-    if (!im1 || !im2) return NULL;
+    if (!im1 || !im2)
+        return NULL;
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_AlphaComposite(im1, im2);
+    Py_BEGIN_ALLOW_THREADS out = ImagingGPU_AlphaComposite(im1, im2);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 /* -------------------------------------------------------------------- */
@@ -377,11 +395,10 @@ static PyObject *
 _gpu_to_imaging(ImagingGPUObject *self, PyObject *args) {
     (void)args;
     Imaging im;
-    Py_BEGIN_ALLOW_THREADS
-    im = ImagingGPU_ToImaging(self->gpu_image);
+    Py_BEGIN_ALLOW_THREADS im = ImagingGPU_ToImaging(self->gpu_image);
     Py_END_ALLOW_THREADS
 
-    if (!im) {
+        if (!im) {
         PyErr_SetString(PyExc_RuntimeError, "GPU->CPU transfer failed");
         return NULL;
     }
@@ -399,11 +416,11 @@ _gpu_gaussian_blur(ImagingGPUObject *self, PyObject *args) {
     }
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_GaussianBlur(self->gpu_image, xradius, yradius, passes);
+    Py_BEGIN_ALLOW_THREADS out =
+        ImagingGPU_GaussianBlur(self->gpu_image, xradius, yradius, passes);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
@@ -415,11 +432,11 @@ _gpu_box_blur(ImagingGPUObject *self, PyObject *args) {
     }
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_BoxBlur(self->gpu_image, xradius, yradius, n);
+    Py_BEGIN_ALLOW_THREADS out =
+        ImagingGPU_BoxBlur(self->gpu_image, xradius, yradius, n);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
@@ -431,11 +448,11 @@ _gpu_unsharp_mask(ImagingGPUObject *self, PyObject *args) {
     }
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_UnsharpMask(self->gpu_image, radius, percent, threshold);
+    Py_BEGIN_ALLOW_THREADS out =
+        ImagingGPU_UnsharpMask(self->gpu_image, radius, percent, threshold);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
@@ -443,8 +460,9 @@ _gpu_filter(ImagingGPUObject *self, PyObject *args) {
     int ksize_x, ksize_y;
     float divisor, offset;
     PyObject *kernel_seq;
-    if (!PyArg_ParseTuple(args, "iiOff", &ksize_x, &ksize_y,
-                          &kernel_seq, &divisor, &offset)) {
+    if (!PyArg_ParseTuple(
+            args, "iiOff", &ksize_x, &ksize_y, &kernel_seq, &divisor, &offset
+        )) {
         return NULL;
     }
 
@@ -455,23 +473,29 @@ _gpu_filter(ImagingGPUObject *self, PyObject *args) {
     }
 
     float *kernel = (float *)malloc(klen * sizeof(float));
-    if (!kernel) return PyErr_NoMemory();
+    if (!kernel)
+        return PyErr_NoMemory();
 
     for (Py_ssize_t i = 0; i < klen; i++) {
         PyObject *item = PySequence_GetItem(kernel_seq, i);
-        if (!item) { free(kernel); return NULL; }
+        if (!item) {
+            free(kernel);
+            return NULL;
+        }
         kernel[i] = (float)PyFloat_AsDouble(item);
         Py_DECREF(item);
-        if (PyErr_Occurred()) { free(kernel); return NULL; }
+        if (PyErr_Occurred()) {
+            free(kernel);
+            return NULL;
+        }
     }
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_Filter(self->gpu_image, ksize_x, ksize_y,
-                            kernel, divisor, offset);
+    Py_BEGIN_ALLOW_THREADS out =
+        ImagingGPU_Filter(self->gpu_image, ksize_x, ksize_y, kernel, divisor, offset);
     Py_END_ALLOW_THREADS
 
-    free(kernel);
+        free(kernel);
     return (PyObject *)_gpu_wrap(out);
 }
 
@@ -479,8 +503,17 @@ static PyObject *
 _gpu_resize(ImagingGPUObject *self, PyObject *args) {
     int xsize, ysize, filter = GPU_RESAMPLE_BILINEAR;
     float box[4] = {0, 0, 0, 0};
-    if (!PyArg_ParseTuple(args, "(ii)|i(ffff)", &xsize, &ysize,
-                          &filter, &box[0], &box[1], &box[2], &box[3])) {
+    if (!PyArg_ParseTuple(
+            args,
+            "(ii)|i(ffff)",
+            &xsize,
+            &ysize,
+            &filter,
+            &box[0],
+            &box[1],
+            &box[2],
+            &box[3]
+        )) {
         return NULL;
     }
     /* Default box = full source */
@@ -490,11 +523,11 @@ _gpu_resize(ImagingGPUObject *self, PyObject *args) {
     }
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_Resample(self->gpu_image, xsize, ysize, filter, box);
+    Py_BEGIN_ALLOW_THREADS out =
+        ImagingGPU_Resample(self->gpu_image, xsize, ysize, filter, box);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
@@ -504,14 +537,14 @@ _gpu_convert(ImagingGPUObject *self, PyObject *args) {
         return NULL;
     }
     ModeID mode = _gpu_parse_mode(mode_obj);
-    if (mode == IMAGING_MODE_UNKNOWN) return NULL;
+    if (mode == IMAGING_MODE_UNKNOWN)
+        return NULL;
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_Convert(self->gpu_image, mode);
+    Py_BEGIN_ALLOW_THREADS out = ImagingGPU_Convert(self->gpu_image, mode);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
@@ -522,32 +555,42 @@ _gpu_transpose(ImagingGPUObject *self, PyObject *args) {
     }
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_Transpose(self->gpu_image, op);
+    Py_BEGIN_ALLOW_THREADS out = ImagingGPU_Transpose(self->gpu_image, op);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
 _gpu_transform(ImagingGPUObject *self, PyObject *args) {
     int xsize, ysize, method, filter = 0, fill = 1;
     double a[8] = {0};
-    if (!PyArg_ParseTuple(args, "(ii)i(dddddddd)|ii",
-                          &xsize, &ysize, &method,
-                          &a[0], &a[1], &a[2], &a[3],
-                          &a[4], &a[5], &a[6], &a[7],
-                          &filter, &fill)) {
+    if (!PyArg_ParseTuple(
+            args,
+            "(ii)i(dddddddd)|ii",
+            &xsize,
+            &ysize,
+            &method,
+            &a[0],
+            &a[1],
+            &a[2],
+            &a[3],
+            &a[4],
+            &a[5],
+            &a[6],
+            &a[7],
+            &filter,
+            &fill
+        )) {
         return NULL;
     }
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_Transform(self->gpu_image, xsize, ysize,
-                               method, a, filter, fill);
+    Py_BEGIN_ALLOW_THREADS out =
+        ImagingGPU_Transform(self->gpu_image, xsize, ysize, method, a, filter, fill);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
@@ -560,14 +603,15 @@ _gpu_chop(ImagingGPUObject *self, PyObject *args) {
         return NULL;
     }
     ImagingGPU other = _gpu_get(other_obj);
-    if (!other) return NULL;
+    if (!other)
+        return NULL;
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_Chop(self->gpu_image, other, op, scale, offset);
+    Py_BEGIN_ALLOW_THREADS out =
+        ImagingGPU_Chop(self->gpu_image, other, op, scale, offset);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
@@ -578,22 +622,21 @@ _gpu_point_transform(ImagingGPUObject *self, PyObject *args) {
     }
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_PointTransform(self->gpu_image, scale, offset);
+    Py_BEGIN_ALLOW_THREADS out =
+        ImagingGPU_PointTransform(self->gpu_image, scale, offset);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
 _gpu_copy(ImagingGPUObject *self, PyObject *args) {
     (void)args;
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_Copy(self->gpu_image);
+    Py_BEGIN_ALLOW_THREADS out = ImagingGPU_Copy(self->gpu_image);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
@@ -604,11 +647,10 @@ _gpu_getband(ImagingGPUObject *self, PyObject *args) {
     }
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_GetBand(self->gpu_image, band);
+    Py_BEGIN_ALLOW_THREADS out = ImagingGPU_GetBand(self->gpu_image, band);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
@@ -619,14 +661,14 @@ _gpu_putband(ImagingGPUObject *self, PyObject *args) {
         return NULL;
     }
     ImagingGPU band_im = _gpu_get(band_obj);
-    if (!band_im) return NULL;
+    if (!band_im)
+        return NULL;
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_PutBand(self->gpu_image, band_im, band);
+    Py_BEGIN_ALLOW_THREADS out = ImagingGPU_PutBand(self->gpu_image, band_im, band);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
@@ -637,11 +679,10 @@ _gpu_fillband(ImagingGPUObject *self, PyObject *args) {
     }
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_FillBand(self->gpu_image, band, color);
+    Py_BEGIN_ALLOW_THREADS out = ImagingGPU_FillBand(self->gpu_image, band, color);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
@@ -650,21 +691,24 @@ _gpu_histogram(ImagingGPUObject *self, PyObject *args) {
     int bands = self->gpu_image->bands;
     int hist_size = bands * 256;
     long *hist = (long *)calloc(hist_size, sizeof(long));
-    if (!hist) return PyErr_NoMemory();
+    if (!hist)
+        return PyErr_NoMemory();
 
     int err;
-    Py_BEGIN_ALLOW_THREADS
-    err = ImagingGPU_Histogram(self->gpu_image, hist);
+    Py_BEGIN_ALLOW_THREADS err = ImagingGPU_Histogram(self->gpu_image, hist);
     Py_END_ALLOW_THREADS
 
-    if (err != GPU_OK) {
+        if (err != GPU_OK) {
         free(hist);
         PyErr_SetString(PyExc_RuntimeError, "GPU histogram failed");
         return NULL;
     }
 
     PyObject *list = PyList_New(hist_size);
-    if (!list) { free(hist); return NULL; }
+    if (!list) {
+        free(hist);
+        return NULL;
+    }
     for (int i = 0; i < hist_size; i++) {
         PyList_SET_ITEM(list, i, PyLong_FromLong(hist[i]));
     }
@@ -682,7 +726,8 @@ static PyObject *
 _gpu_point_lut(ImagingGPUObject *self, PyObject *args) {
     Py_buffer lut_buf;
     int bands;
-    if (!PyArg_ParseTuple(args, "y*i", &lut_buf, &bands)) return NULL;
+    if (!PyArg_ParseTuple(args, "y*i", &lut_buf, &bands))
+        return NULL;
 
     if (lut_buf.len < bands * 256) {
         PyBuffer_Release(&lut_buf);
@@ -691,11 +736,11 @@ _gpu_point_lut(ImagingGPUObject *self, PyObject *args) {
     }
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_PointLut(self->gpu_image, (const UINT8 *)lut_buf.buf, bands);
+    Py_BEGIN_ALLOW_THREADS out =
+        ImagingGPU_PointLut(self->gpu_image, (const UINT8 *)lut_buf.buf, bands);
     Py_END_ALLOW_THREADS
 
-    PyBuffer_Release(&lut_buf);
+        PyBuffer_Release(&lut_buf);
     return (PyObject *)_gpu_wrap(out);
 }
 
@@ -707,7 +752,8 @@ _gpu_paste(ImagingGPUObject *self, PyObject *args) {
         return NULL;
 
     ImagingGPU src_im = _gpu_get(src_obj);
-    if (!src_im) return NULL;
+    if (!src_im)
+        return NULL;
 
     ImagingGPU mask_im = NULL;
     if (mask_obj != Py_None) {
@@ -719,11 +765,11 @@ _gpu_paste(ImagingGPUObject *self, PyObject *args) {
     }
 
     int err;
-    Py_BEGIN_ALLOW_THREADS
-    err = ImagingGPU_PasteInPlace(self->gpu_image, src_im, mask_im, dx, dy);
+    Py_BEGIN_ALLOW_THREADS err =
+        ImagingGPU_PasteInPlace(self->gpu_image, src_im, mask_im, dx, dy);
     Py_END_ALLOW_THREADS
 
-    if (err != GPU_OK) {
+        if (err != GPU_OK) {
         PyErr_SetString(PyExc_RuntimeError, "GPU paste failed");
         return NULL;
     }
@@ -735,7 +781,8 @@ _gpu_merge(PyObject *self_unused, PyObject *args) {
     (void)self_unused;
     const char *mode_str;
     PyObject *band_list;
-    if (!PyArg_ParseTuple(args, "sO", &mode_str, &band_list)) return NULL;
+    if (!PyArg_ParseTuple(args, "sO", &mode_str, &band_list))
+        return NULL;
 
     if (!PyList_Check(band_list) && !PyTuple_Check(band_list)) {
         PyErr_SetString(PyExc_TypeError, "bands must be a list or tuple");
@@ -760,15 +807,15 @@ _gpu_merge(PyObject *self_unused, PyObject *args) {
         PyObject *item = PySequence_GetItem(band_list, i);
         bands[i] = _gpu_get(item);
         Py_DECREF(item);
-        if (!bands[i]) return NULL;
+        if (!bands[i])
+            return NULL;
     }
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_Merge(mode, bands);
+    Py_BEGIN_ALLOW_THREADS out = ImagingGPU_Merge(mode, bands);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
@@ -779,8 +826,9 @@ _gpu_split_method(ImagingGPUObject *self, PyObject *args) {
 
     /* Allocate output band images */
     for (int i = 0; i < nbands; i++) {
-        bands[i] = ImagingGPU_NewDirty(IMAGING_MODE_L, self->gpu_image->xsize,
-                                        self->gpu_image->ysize);
+        bands[i] = ImagingGPU_NewDirty(
+            IMAGING_MODE_L, self->gpu_image->xsize, self->gpu_image->ysize
+        );
         if (!bands[i]) {
             for (int j = 0; j < i; j++) ImagingGPU_Delete(bands[j]);
             return PyErr_NoMemory();
@@ -788,11 +836,10 @@ _gpu_split_method(ImagingGPUObject *self, PyObject *args) {
     }
 
     int err;
-    Py_BEGIN_ALLOW_THREADS
-    err = ImagingGPU_Split(self->gpu_image, bands);
+    Py_BEGIN_ALLOW_THREADS err = ImagingGPU_Split(self->gpu_image, bands);
     Py_END_ALLOW_THREADS
 
-    if (err != GPU_OK) {
+        if (err != GPU_OK) {
         for (int i = 0; i < nbands; i++) ImagingGPU_Delete(bands[i]);
         PyErr_SetString(PyExc_RuntimeError, "GPU split failed");
         return NULL;
@@ -808,16 +855,16 @@ _gpu_split_method(ImagingGPUObject *self, PyObject *args) {
 static PyObject *
 _gpu_getbbox(ImagingGPUObject *self, PyObject *args) {
     int alpha_only = 0;
-    if (!PyArg_ParseTuple(args, "|i", &alpha_only)) return NULL;
+    if (!PyArg_ParseTuple(args, "|i", &alpha_only))
+        return NULL;
 
     int bbox[4] = {0, 0, 0, 0};
 
     int err;
-    Py_BEGIN_ALLOW_THREADS
-    err = ImagingGPU_GetBBox(self->gpu_image, bbox, alpha_only);
+    Py_BEGIN_ALLOW_THREADS err = ImagingGPU_GetBBox(self->gpu_image, bbox, alpha_only);
     Py_END_ALLOW_THREADS
 
-    if (err != GPU_OK) {
+        if (err != GPU_OK) {
         PyErr_SetString(PyExc_RuntimeError, "GPU getbbox failed");
         return NULL;
     }
@@ -836,11 +883,10 @@ _gpu_getextrema(ImagingGPUObject *self, PyObject *args) {
     memset(extrema, 0, sizeof(extrema));
 
     int err;
-    Py_BEGIN_ALLOW_THREADS
-    err = ImagingGPU_GetExtrema(self->gpu_image, extrema);
+    Py_BEGIN_ALLOW_THREADS err = ImagingGPU_GetExtrema(self->gpu_image, extrema);
     Py_END_ALLOW_THREADS
 
-    if (err != GPU_OK) {
+        if (err != GPU_OK) {
         PyErr_SetString(PyExc_RuntimeError, "GPU getextrema failed");
         return NULL;
     }
@@ -850,8 +896,11 @@ _gpu_getextrema(ImagingGPUObject *self, PyObject *args) {
     }
     PyObject *tuple = PyTuple_New(bands);
     for (int i = 0; i < bands; i++) {
-        PyTuple_SET_ITEM(tuple, i,
-            Py_BuildValue("(ii)", (int)extrema[i*2], (int)extrema[i*2+1]));
+        PyTuple_SET_ITEM(
+            tuple,
+            i,
+            Py_BuildValue("(ii)", (int)extrema[i * 2], (int)extrema[i * 2 + 1])
+        );
     }
     return tuple;
 }
@@ -859,107 +908,109 @@ _gpu_getextrema(ImagingGPUObject *self, PyObject *args) {
 static PyObject *
 _gpu_effect_spread(ImagingGPUObject *self, PyObject *args) {
     int distance;
-    if (!PyArg_ParseTuple(args, "i", &distance)) return NULL;
+    if (!PyArg_ParseTuple(args, "i", &distance))
+        return NULL;
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_EffectSpread(self->gpu_image, distance);
+    Py_BEGIN_ALLOW_THREADS out = ImagingGPU_EffectSpread(self->gpu_image, distance);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
 _gpu_crop(ImagingGPUObject *self, PyObject *args) {
     int x0, y0, x1, y1;
-    if (!PyArg_ParseTuple(args, "(iiii)", &x0, &y0, &x1, &y1)) return NULL;
+    if (!PyArg_ParseTuple(args, "(iiii)", &x0, &y0, &x1, &y1))
+        return NULL;
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_Crop(self->gpu_image, x0, y0, x1, y1);
+    Py_BEGIN_ALLOW_THREADS out = ImagingGPU_Crop(self->gpu_image, x0, y0, x1, y1);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
 _gpu_expand(ImagingGPUObject *self, PyObject *args) {
     int xmargin, ymargin;
     int fill0 = 0, fill1 = 0, fill2 = 0, fill3 = 0;
-    if (!PyArg_ParseTuple(args, "ii|iiii", &xmargin, &ymargin,
-                           &fill0, &fill1, &fill2, &fill3)) return NULL;
+    if (!PyArg_ParseTuple(
+            args, "ii|iiii", &xmargin, &ymargin, &fill0, &fill1, &fill2, &fill3
+        ))
+        return NULL;
 
-    UINT8 fill[4] = { (UINT8)fill0, (UINT8)fill1, (UINT8)fill2, (UINT8)fill3 };
+    UINT8 fill[4] = {(UINT8)fill0, (UINT8)fill1, (UINT8)fill2, (UINT8)fill3};
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_Expand(self->gpu_image, xmargin, ymargin, fill);
+    Py_BEGIN_ALLOW_THREADS out =
+        ImagingGPU_Expand(self->gpu_image, xmargin, ymargin, fill);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
 _gpu_offset_method(ImagingGPUObject *self, PyObject *args) {
     int xoffset, yoffset = 0;
-    if (!PyArg_ParseTuple(args, "i|i", &xoffset, &yoffset)) return NULL;
+    if (!PyArg_ParseTuple(args, "i|i", &xoffset, &yoffset))
+        return NULL;
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_Offset(self->gpu_image, xoffset, yoffset);
+    Py_BEGIN_ALLOW_THREADS out = ImagingGPU_Offset(self->gpu_image, xoffset, yoffset);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
 _gpu_negative_method(ImagingGPUObject *self, PyObject *args) {
     (void)args;
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_Negative(self->gpu_image);
+    Py_BEGIN_ALLOW_THREADS out = ImagingGPU_Negative(self->gpu_image);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
 _gpu_posterize_method(ImagingGPUObject *self, PyObject *args) {
     int bits;
-    if (!PyArg_ParseTuple(args, "i", &bits)) return NULL;
+    if (!PyArg_ParseTuple(args, "i", &bits))
+        return NULL;
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_Posterize(self->gpu_image, bits);
+    Py_BEGIN_ALLOW_THREADS out = ImagingGPU_Posterize(self->gpu_image, bits);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
 _gpu_solarize_method(ImagingGPUObject *self, PyObject *args) {
     int threshold = 128;
-    if (!PyArg_ParseTuple(args, "|i", &threshold)) return NULL;
+    if (!PyArg_ParseTuple(args, "|i", &threshold))
+        return NULL;
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_Solarize(self->gpu_image, threshold);
+    Py_BEGIN_ALLOW_THREADS out = ImagingGPU_Solarize(self->gpu_image, threshold);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
 _gpu_equalize_method(ImagingGPUObject *self, PyObject *args) {
     Py_buffer lut_buf;
-    if (!PyArg_ParseTuple(args, "y*", &lut_buf)) return NULL;
+    if (!PyArg_ParseTuple(args, "y*", &lut_buf))
+        return NULL;
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_Equalize(self->gpu_image, (const UINT8 *)lut_buf.buf);
+    Py_BEGIN_ALLOW_THREADS out =
+        ImagingGPU_Equalize(self->gpu_image, (const UINT8 *)lut_buf.buf);
     Py_END_ALLOW_THREADS
 
-    PyBuffer_Release(&lut_buf);
+        PyBuffer_Release(&lut_buf);
     return (PyObject *)_gpu_wrap(out);
 }
 
@@ -980,11 +1031,10 @@ _gpu_linear_gradient(PyObject *self_unused, PyObject *args) {
     }
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_LinearGradient(mode, w, h, direction);
+    Py_BEGIN_ALLOW_THREADS out = ImagingGPU_LinearGradient(mode, w, h, direction);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 static PyObject *
@@ -1003,11 +1053,10 @@ _gpu_radial_gradient(PyObject *self_unused, PyObject *args) {
     }
 
     ImagingGPU out;
-    Py_BEGIN_ALLOW_THREADS
-    out = ImagingGPU_RadialGradient(mode, w, h);
+    Py_BEGIN_ALLOW_THREADS out = ImagingGPU_RadialGradient(mode, w, h);
     Py_END_ALLOW_THREADS
 
-    return (PyObject *)_gpu_wrap(out);
+        return (PyObject *)_gpu_wrap(out);
 }
 
 /* -------------------------------------------------------------------- */
@@ -1031,11 +1080,10 @@ _gpu_reduce_method(ImagingGPUObject *self, PyObject *args) {
     }
 
     int err;
-    Py_BEGIN_ALLOW_THREADS
-    err = ImagingGPU_Reduce(out, im, factor_x, factor_y);
+    Py_BEGIN_ALLOW_THREADS err = ImagingGPU_Reduce(out, im, factor_x, factor_y);
     Py_END_ALLOW_THREADS
 
-    if (err != GPU_OK) {
+        if (err != GPU_OK) {
         ImagingGPU_Delete(out);
         PyErr_SetString(PyExc_RuntimeError, "GPU reduce failed");
         return NULL;
@@ -1057,11 +1105,10 @@ _gpu_rank_filter_method(ImagingGPUObject *self, PyObject *args) {
     }
 
     int err;
-    Py_BEGIN_ALLOW_THREADS
-    err = ImagingGPU_RankFilter(out, im, ksize, rank);
+    Py_BEGIN_ALLOW_THREADS err = ImagingGPU_RankFilter(out, im, ksize, rank);
     Py_END_ALLOW_THREADS
 
-    if (err != GPU_OK) {
+        if (err != GPU_OK) {
         ImagingGPU_Delete(out);
         PyErr_SetString(PyExc_RuntimeError, "GPU rank_filter failed");
         return NULL;
@@ -1083,11 +1130,10 @@ _gpu_mode_filter_method(ImagingGPUObject *self, PyObject *args) {
     }
 
     int err;
-    Py_BEGIN_ALLOW_THREADS
-    err = ImagingGPU_ModeFilter(out, im, ksize);
+    Py_BEGIN_ALLOW_THREADS err = ImagingGPU_ModeFilter(out, im, ksize);
     Py_END_ALLOW_THREADS
 
-    if (err != GPU_OK) {
+        if (err != GPU_OK) {
         ImagingGPU_Delete(out);
         PyErr_SetString(PyExc_RuntimeError, "GPU mode_filter failed");
         return NULL;
@@ -1109,8 +1155,7 @@ _gpu_getattr_mode(ImagingGPUObject *self, void *closure) {
 static PyObject *
 _gpu_getattr_size(ImagingGPUObject *self, void *closure) {
     (void)closure;
-    return Py_BuildValue("(ii)", self->gpu_image->xsize,
-                         self->gpu_image->ysize);
+    return Py_BuildValue("(ii)", self->gpu_image->xsize, self->gpu_image->ysize);
 }
 
 static PyObject *
@@ -1199,8 +1244,7 @@ static PyGetSetDef _gpu_getsetters[] = {
 };
 
 static PyTypeObject ImagingGPU_Type = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "ImagingGPU",
+    PyVarObject_HEAD_INIT(NULL, 0).tp_name = "ImagingGPU",
     .tp_basicsize = sizeof(ImagingGPUObject),
     .tp_dealloc = (destructor)_gpu_dealloc,
     .tp_flags = Py_TPFLAGS_DEFAULT,
@@ -1214,37 +1258,59 @@ static PyTypeObject ImagingGPU_Type = {
 
 static PyMethodDef module_functions[] = {
     /* Backend management */
-    {"backend_init", (PyCFunction)_gpu_backend_init, METH_VARARGS,
+    {"backend_init",
+     (PyCFunction)_gpu_backend_init,
+     METH_VARARGS,
      "Initialize the GPU backend. Optional: 1=OpenCL, 2=CUDA, 0=auto."},
-    {"backend_shutdown", (PyCFunction)_gpu_backend_shutdown, METH_NOARGS,
+    {"backend_shutdown",
+     (PyCFunction)_gpu_backend_shutdown,
+     METH_NOARGS,
      "Shut down the GPU backend and release resources."},
-    {"is_available", (PyCFunction)_gpu_is_available, METH_NOARGS,
+    {"is_available",
+     (PyCFunction)_gpu_is_available,
+     METH_NOARGS,
      "Returns True if a GPU backend is active."},
-    {"get_backend_name", (PyCFunction)_gpu_get_backend_name, METH_NOARGS,
+    {"get_backend_name",
+     (PyCFunction)_gpu_get_backend_name,
+     METH_NOARGS,
      "Returns the name of the active GPU backend."},
-    {"get_device_name", (PyCFunction)_gpu_get_device_name, METH_NOARGS,
+    {"get_device_name",
+     (PyCFunction)_gpu_get_device_name,
+     METH_NOARGS,
      "Returns the name of the GPU device."},
 
     /* Image creation */
-    {"new", (PyCFunction)_gpu_new, METH_VARARGS,
-     "Create a new zeroed GPU image."},
-    {"fill", (PyCFunction)_gpu_fill, METH_VARARGS,
+    {"new", (PyCFunction)_gpu_new, METH_VARARGS, "Create a new zeroed GPU image."},
+    {"fill",
+     (PyCFunction)_gpu_fill,
+     METH_VARARGS,
      "Create a new GPU image filled with a color."},
-    {"from_imaging", (PyCFunction)_gpu_from_imaging, METH_VARARGS,
+    {"from_imaging",
+     (PyCFunction)_gpu_from_imaging,
+     METH_VARARGS,
      "Upload a CPU Imaging object to GPU."},
-    {"from_bytes", (PyCFunction)_gpu_from_bytes, METH_VARARGS,
+    {"from_bytes",
+     (PyCFunction)_gpu_from_bytes,
+     METH_VARARGS,
      "Upload raw pixel bytes to GPU. Args: (mode, (w,h), bytes)."},
 
     /* Compositing (module-level) */
-    {"blend", (PyCFunction)_gpu_blend, METH_VARARGS,
-     "Blend two GPU images."},
-    {"alpha_composite", (PyCFunction)_gpu_alpha_composite, METH_VARARGS,
+    {"blend", (PyCFunction)_gpu_blend, METH_VARARGS, "Blend two GPU images."},
+    {"alpha_composite",
+     (PyCFunction)_gpu_alpha_composite,
+     METH_VARARGS,
      "Alpha composite two GPU images."},
-    {"merge", (PyCFunction)_gpu_merge, METH_VARARGS,
+    {"merge",
+     (PyCFunction)_gpu_merge,
+     METH_VARARGS,
      "Merge single-band GPU images into a multi-band image."},
-    {"linear_gradient", (PyCFunction)_gpu_linear_gradient, METH_VARARGS,
+    {"linear_gradient",
+     (PyCFunction)_gpu_linear_gradient,
+     METH_VARARGS,
      "Create a linear gradient GPU image."},
-    {"radial_gradient", (PyCFunction)_gpu_radial_gradient, METH_VARARGS,
+    {"radial_gradient",
+     (PyCFunction)_gpu_radial_gradient,
+     METH_VARARGS,
      "Create a radial gradient GPU image."},
 
     {NULL, NULL, 0, NULL}
@@ -1260,8 +1326,7 @@ _gpu_module_exec(PyObject *m) {
         return -1;
     }
     Py_INCREF(&ImagingGPU_Type);
-    if (PyModule_AddObject(m, "ImagingGPU",
-                           (PyObject *)&ImagingGPU_Type) < 0) {
+    if (PyModule_AddObject(m, "ImagingGPU", (PyObject *)&ImagingGPU_Type) < 0) {
         Py_DECREF(&ImagingGPU_Type);
         return -1;
     }

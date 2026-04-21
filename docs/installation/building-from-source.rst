@@ -89,6 +89,24 @@ Many of Pillow's features require external libraries:
 
 * **libxcb** provides X11 screengrab support.
 
+* **OpenCL** enables GPU-accelerated operations on any vendor's GPU (Intel, AMD, NVIDIA).
+
+  * On Linux, install ``ocl-icd-opencl-dev`` (Debian/Ubuntu) or ``ocl-icd-devel opencl-headers``
+    (Fedora/RHEL) plus a vendor ICD such as ``intel-opencl-icd``, ``mesa-opencl-icd``, or
+    ``nvidia-opencl-dev``.
+  * On Windows, the Intel oneAPI Base Toolkit provides OpenCL headers and ``OpenCL.lib``
+    and is detected automatically.
+  * On macOS, OpenCL headers are bundled with Xcode Command Line Tools (Apple's runtime,
+    deprecated since macOS 10.14, still functional).
+  * When found at build time, the ``PIL._imaging_gpu`` extension is compiled automatically.
+    See :ref:`gpu-acceleration` for details.
+
+* **CUDA** enables GPU-accelerated operations on NVIDIA GPUs (Linux and Windows only).
+
+  * Install the `CUDA Toolkit <https://developer.nvidia.com/cuda-downloads>`_ (11.0+).
+    The build system detects ``cuda.h``, ``libcuda``, and ``libnvrtc`` automatically.
+  * See :ref:`gpu-acceleration` for details.
+
 * **libavif** provides support for the AVIF format.
 
   * Pillow requires libavif version **1.0.0** or greater.

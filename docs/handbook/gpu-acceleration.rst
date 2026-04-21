@@ -38,21 +38,17 @@ Building with GPU support
 OpenCL (any platform)
 ~~~~~~~~~~~~~~~~~~~~~
 
-Install the OpenCL development headers and the ``libOpenCL`` loader, then
-build Pillow normally — the build system detects them automatically.
+OpenCL is a vendor-neutral standard.  The runtime (``libOpenCL.so`` /
+``OpenCL.dll``) ships with every modern GPU driver — **no vendor SDK is
+required**.  For building you only need the standard Khronos headers and
+the ICD loader.
 
 .. tab:: Linux (apt)
 
    .. code-block:: shell
 
-      # Intel GPU (integrated or discrete)
-      sudo apt install ocl-icd-opencl-dev intel-opencl-icd
-
-      # AMD GPU
-      sudo apt install ocl-icd-opencl-dev mesa-opencl-icd
-
-      # NVIDIA GPU
-      sudo apt install ocl-icd-opencl-dev nvidia-opencl-dev
+      # Headers + ICD loader (vendor-agnostic)
+      sudo apt install opencl-headers ocl-icd-opencl-dev
 
       pip install --upgrade .
 
@@ -60,16 +56,16 @@ build Pillow normally — the build system detects them automatically.
 
    .. code-block:: shell
 
-      sudo dnf install ocl-icd-devel opencl-headers
+      sudo dnf install opencl-headers ocl-icd-devel
       pip install --upgrade .
 
-.. tab:: Windows (Intel oneAPI)
+.. tab:: Windows
 
-   Download and install `Intel oneAPI Base Toolkit
-   <https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit-download.html>`_.
-   The build system auto-detects it; no extra flags are needed:
-
-   .. code-block:: shell
+   ``OpenCL.dll`` is already present in ``System32`` with any modern Intel,
+   AMD, or NVIDIA driver.  You only need the Khronos OpenCL headers for
+   compilation.  Install the `Khronos OpenCL SDK
+   <https://github.com/KhronosGroup/OpenCL-SDK/releases>`_ (or any package
+   that provides ``CL/cl.h``), then::
 
       pip install --upgrade .
 
@@ -77,22 +73,23 @@ build Pillow normally — the build system detects them automatically.
 
    .. code-block:: shell
 
-      # OpenCL headers are bundled with Xcode Command Line Tools
+      # OpenCL framework + headers ship with Xcode Command Line Tools
       xcode-select --install
       pip install --upgrade .
 
-CUDA (NVIDIA, Linux or Windows only)
+CUDA (NVIDIA only, Linux or Windows)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Install the `CUDA Toolkit <https://developer.nvidia.com/cuda-downloads>`_
-(version 11.0 or newer) which provides ``cuda.h``, ``libcuda`` and
+CUDA is an NVIDIA-specific technology.  Install the
+`CUDA Toolkit <https://developer.nvidia.com/cuda-downloads>`_
+(version 11.0 or newer), which provides ``cuda.h``, ``libcuda``, and
 ``libnvrtc``:
 
 .. code-block:: shell
 
    pip install --upgrade .
 
-The build system looks for ``cuda.h``, ``libcuda``, and ``libnvrtc``
+The build system detects ``cuda.h``, ``libcuda``, and ``libnvrtc``
 automatically.  To point it at a non-standard installation directory::
 
    CUDA_ROOT=/path/to/cuda pip install --upgrade .

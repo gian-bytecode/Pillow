@@ -91,20 +91,22 @@ Many of Pillow's features require external libraries:
 
 * **OpenCL** enables GPU-accelerated operations on any vendor's GPU (Intel, AMD, NVIDIA).
 
-  * On Linux, install ``ocl-icd-opencl-dev`` (Debian/Ubuntu) or ``ocl-icd-devel opencl-headers``
-    (Fedora/RHEL) plus a vendor ICD such as ``intel-opencl-icd``, ``mesa-opencl-icd``, or
-    ``nvidia-opencl-dev``.
-  * On Windows, the Intel oneAPI Base Toolkit provides OpenCL headers and ``OpenCL.lib``
-    and is detected automatically.
-  * On macOS, OpenCL headers are bundled with Xcode Command Line Tools (Apple's runtime,
-    deprecated since macOS 10.14, still functional).
+  * OpenCL is a vendor-neutral standard. The runtime (``libOpenCL.so`` / ``OpenCL.dll``)
+    ships with every modern GPU driver — **no vendor SDK is required**.
+  * For building, install the Khronos OpenCL headers and the ICD loader:
+    ``opencl-headers ocl-icd-opencl-dev`` on Debian/Ubuntu,
+    ``opencl-headers ocl-icd-devel`` on Fedora/RHEL.
+    On Windows, ``OpenCL.dll`` is already in ``System32``; only the headers are needed
+    (e.g. `Khronos OpenCL SDK <https://github.com/KhronosGroup/OpenCL-SDK/releases>`_).
+    On macOS, the OpenCL framework ships with Xcode Command Line Tools.
   * When found at build time, the ``PIL._imaging_gpu`` extension is compiled automatically.
     See :ref:`gpu-acceleration` for details.
 
 * **CUDA** enables GPU-accelerated operations on NVIDIA GPUs (Linux and Windows only).
 
-  * Install the `CUDA Toolkit <https://developer.nvidia.com/cuda-downloads>`_ (11.0+).
-    The build system detects ``cuda.h``, ``libcuda``, and ``libnvrtc`` automatically.
+  * CUDA is NVIDIA-specific. Install the
+    `CUDA Toolkit <https://developer.nvidia.com/cuda-downloads>`_ (11.0+),
+    which provides ``cuda.h``, ``libcuda``, and ``libnvrtc``.
   * See :ref:`gpu-acceleration` for details.
 
 * **libavif** provides support for the AVIF format.

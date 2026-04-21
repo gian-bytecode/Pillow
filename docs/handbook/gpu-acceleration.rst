@@ -294,7 +294,7 @@ You can check and override::
 
    from PIL.gpu._backend import get_backend_name, set_preferred_backend
 
-   print(get_backend_name())          # "cuda", "opencl", or "cpu"
+   print(get_backend_name())          # "cuda", "opencl" or "cpu"
    set_preferred_backend("opencl")    # force OpenCL even if CUDA is available
 
 If neither CUDA nor OpenCL was compiled in, all ``PIL.gpu`` operations

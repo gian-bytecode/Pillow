@@ -20,4 +20,4 @@ exclude_also =
 omit =
     checks/*.py
     Tests/createfontdatachunk.py
-    src/PIL/gpu/ImagePalette.py
+    src/PIL/gpu/*.py

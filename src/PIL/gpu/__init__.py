@@ -28,8 +28,6 @@ __all__ = [
     "ImageOps",
     "ImageEnhance",
     "ImageStat",
-    "ImageColor",
-    "ImageMode",
     "ImageDraw",
     "ImageMath",
     "ImageMorph",

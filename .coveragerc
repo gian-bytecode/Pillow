@@ -15,11 +15,6 @@ exclude_also =
     # Empty bodies in protocols or abstract methods
     ^\s*def [a-zA-Z0-9_]+\(.*\)(\s*->.*)?:\s*\.\.\.(\s*#.*)?$
     ^\s*\.\.\.(\s*#.*)?$
-# Skip files that have zero executed lines (e.g. GPU files when no GPU is
-# available and all GPU tests are skipped via pytest.importorskip).
-# This avoids coverage 7.x raising a hard "no-source" error in that case.
-# Coverage is still measured normally when a GPU is present.
-skip_empty = True
 
 [run]
 omit =

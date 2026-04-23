@@ -100,6 +100,7 @@ jobs:
         docker stop pillow_container
         sudo mkdir -p $pil_path
         sudo cp src/PIL/*.py $pil_path
+        sudo cp -r src/PIL/gpu $pil_path/gpu
         cd /Pillow
         .ci/after_success.sh
 
